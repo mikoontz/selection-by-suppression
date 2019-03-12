@@ -7,3 +7,4 @@ data/data_raw/features/jepcodes-v7.kml
 data/data_raw/features/RDS-2013-0009.4_GDB/*
 data/data_output/sierra-nevada-short-fod-4326.geoJSON
 data/data_output/sierra-nevada-short-fod/*
+.DS_Store

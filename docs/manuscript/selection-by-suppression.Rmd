@@ -1,0 +1,43 @@
+---
+bibliography: ../docs_carpentry/selection-by-suppression.bib
+csl: ../docs_carpentry/frontiers-in-ecology-and-the-environment.csl
+params:
+  title: Selection by suppression
+  author: |
+    Michael J. Koontz^1,2,\*^,
+    Zachary L. Steel^3^,
+    Andrew M. Latimer^1,2^,
+    Malcolm P. North^1,2,4^
+  affiliation: |
+    ^1^Graduate Group in Ecology, University of Californa, Davis, CA, USA  
+    ^2^Department of Plant Sciences, University of California, Davis, CA, USA  
+    ^3^Department of Environmental Science and Policy, University of California, Berkeley, CA, USA  
+    ^4^USDA Forest Service, Pacific Southwest Research Station, Davis, CA, USA
+  correspondence: |
+    michael.koontz@colorado.edu
+  date_generated: !r format(Sys.Date(), "%B %d, %Y")
+geometry: margin=1in
+header-includes:
+  - \usepackage[left]{lineno}
+  - \linenumbers
+  - \usepackage{setspace}
+  - \doublespacing
+  - \DeclareUnicodeCharacter{200E}{}
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#`r params$title`
+
+`r params$author`
+
+`r params$affiliation`
+
+^\*^Correspondence: ``r params$correspondence``
+
+Date report generated: `r params$date_generated`
+
+## Abstract

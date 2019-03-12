@@ -1,0 +1,1 @@
+Fire occurrence dataset downloaded from: https://www.fs.usda.gov/rds/archive/Product/RDS-2013-0009.4/
