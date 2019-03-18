@@ -41,3 +41,63 @@ knitr::opts_chunk$set(echo = TRUE)
 Date report generated: `r params$date_generated`
 
 ## Abstract
+
+## Introduction
+
+Fire suppression is an oft-cited root cause of the modern trend of larger, more severe wildfires in the yellow pine/mixed-conifer forests of California's Sierra Nevada mountain range. While this system would experience frequent, low- to moderate-severity wildfire every 8 to 15 years in the several centuries prior to Euroamerican settlement, suppression management has effectively eliminated fire effects from the 
+
+Bimodal distribution of fire sizes under suppression policy: either the fires were quickly put out and remained very small, or they escaped suppression efforts and grew exceptionally large due to regional climate conspiring with accumulated fuel conditions. Indeed, @miller2017 found evidence for this pattern in that the average size of all fires is much smaller under a modern fire suppression management regime compared to pre-Euroamerican settlement fires (as one might intuitively expect given the goal of suppression is to reduce fire size), but the average size of larger fires (>4 hectares) is counter-intuitively much greater under modern suppression management. Many studies have suggested that adding more fire to the landscape is a way to return forests to pre-Euroamerican settlement resilient conditions [@north2015] (XXXXX Stephens, Stevens, Collins). This 
+
+Gigantic fires with large, simple high severity patches are bad for forest health [@stevens2017; @steel2018]. These megafires are increasingly common [@millar2015] and arise from fortuitous alignment of extreme fuel and climate conditions that generate self-propagating fire behavior [@coen2018].
+
+Thus, the cumulative effect of fire suppression policy has led to a management paradox with respect to maintaining forest health: *we shouldn't put out the fires that we can, but we can't put out the fires that we should*. Climate change has complicated the paradox further. Earlier snowmelt, drier and hotter conditions, as well as longer fire seasons [@westerling2006; @westerling2016; @abatzoglou2013a; @abatzoglou2016].
+
+We use a comprehensive dataset of fire occurrence [@short2017] as well as a new dataset of fire severity [@koontz2019] to measure this "selection by suppression" effect.
+
+
+"A variety of environmental and social factors influence wildfire growth and whether a fire overcomes initial attack efforts and becomes a large wildfire. However, little is known about how these factors differ between lightning-caused and human-caused wildfires." [@abatzoglou2018]
+
+"As shown by Balch et al. (2017), human-caused fires occupy an environmental niche characterised by lower lightning- frequency and higher fuel moisture than lightning-caused fires. The present work complements those findings by demonstrating the likelihood of human ignitions evolving into large fires when facilitated by strong winds." [@abatzoglou2018]
+
+## Methods
+
+Description of forest type. Using FRID designation of yellow pine/mixed-conifer to represent "potential vegetation" [@steel2018; @harvey2016b; @koontz2019a].
+
+Some summary stats of the Sierra Nevada yellow pine/mixed-conifer subset of the @short2017 fire occurrence dataset.
+
+Some summary stats of the @koontz2019 severity dataset.
+
+To do:
+
+Subset @short2017 into suppression/managed wildfire based on where it burns
+
+Upload this dataset as a shapefile to Earth Engine.
+
+Get initial burning conditions for each point using the algorithm from "remote sensing resilience" work.
+
+Analysis: regional climate conditions "selection" analysis akin to measuring the selection coefficient in evolutionary biology [@lande1983; @schluter1988].
+
+Pre-selection event is the distribution of fire "traits" (regional climate; [vegetation metrics, severity configuration here as correlated traits?]) for the full population of fires. Post-selection event is the "larger" fires by the different size cutoffs. Do this analysis for both the suppression and the managed wildfire areas.
+
+OR, alternatively:
+
+Pre-selection trait distribution of fire size, regional climate, vegetation metrics, and the selection event is suppression-- so get rid of all non-suppression fires and see the impact to the "traits" of fire size, regional climate, and vegetation metrics. I would expect disruptive selection on fire size, no selection on regional climate (suppression and managed wildfires burn under similar conditions, accounting for size), and perhaps positive selection on vegetation ("surviving" fires are burning in denser, more homogenous fuels)
+
+If including the vegetation 
+
+"Disruptive selection" language [@schluter1988].
+
+## Results
+
+## Discussion
+
+My plan is to write a paper about the interaction between fire size and suppression management using the new dataset of severity in YPMC that includes fires down to 4 hectares in size. 
+
+The idea was originally suggested by Jennifer Balch as something she was curious about while I was interviewing for the Earth Lab postdoc. The development from there has largely been shaped by how you've talked about the "selection" effect of suppression resulting in especially large fires because the ones that grow large are only able to do so because they burn under extreme conditions. @steel2018 found only a small difference in the measure of regional climate during suppression versus wildfire use fires (modeled fuel moisture), which led to the conclusion that an "extreme fuel" effect underlied the differences in the size/configuration of high and unburned severity patches. But that analysis only included fires greater than 80 hectares in size, which is still pretty big. Analyzing big fires made sense for that paper, because they affect the most area, but if we want to suggest "let fires burn at more moderate weather conditions" as a mitigation strategy for a century of making fuel conditions more extreme, then I think this paper would serve the purpose of measuring the degree to which good work can be done by a fire (even in extreme fuel conditions) in milder weather conditions. 
+
+Good starting points:
+
+Fire occurrence data: [@short2017]
+Papers on interacting effects of vegetation, regional climate, fire size, and severity patterns: [@cansler2014; @harvey2016b].
+
+## References
