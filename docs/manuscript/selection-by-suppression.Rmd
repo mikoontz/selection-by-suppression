@@ -44,7 +44,7 @@ Date report generated: `r params$date_generated`
 
 ## Introduction
 
-Fire suppression is an oft-cited root cause of the modern trend of larger, more severe wildfires in the yellow pine/mixed-conifer forests of California's Sierra Nevada mountain range. While this system would experience frequent, low- to moderate-severity wildfire every 8 to 15 years in the several centuries prior to Euroamerican settlement, suppression management has effectively eliminated fire effects from the 
+Fire suppression is an oft-cited root cause of the modern trend of larger, more severe wildfires in the yellow pine/mixed-conifer forests of California's Sierra Nevada mountain range. While this system would experience frequent, low- to moderate-severity wildfire every 8 to 15 years in the several centuries prior to Euroamerican settlement, suppression management has effectively eliminated fire effects from much of western dry forested land in the past 100 years [@safford2017].
 
 Bimodal distribution of fire sizes under suppression policy: either the fires were quickly put out and remained very small, or they escaped suppression efforts and grew exceptionally large due to regional climate conspiring with accumulated fuel conditions. Indeed, @miller2017 found evidence for this pattern in that the average size of all fires is much smaller under a modern fire suppression management regime compared to pre-Euroamerican settlement fires (as one might intuitively expect given the goal of suppression is to reduce fire size), but the average size of larger fires (>4 hectares) is counter-intuitively much greater under modern suppression management. Many studies have suggested that adding more fire to the landscape is a way to return forests to pre-Euroamerican settlement resilient conditions [@north2015] (XXXXX Stephens, Stevens, Collins). This 
 
@@ -55,9 +55,9 @@ Thus, the cumulative effect of fire suppression policy has led to a management p
 We use a comprehensive dataset of fire occurrence [@short2017] as well as a new dataset of fire severity [@koontz2019] to measure this "selection by suppression" effect.
 
 
-"A variety of environmental and social factors influence wildfire growth and whether a fire overcomes initial attack efforts and becomes a large wildfire. However, little is known about how these factors differ between lightning-caused and human-caused wildfires." [@abatzoglou2018]
+"A variety of environmental and social factors influence wildfire growth and whether a fire overcomes initial attack efforts and becomes a large wildfire. However, little is known about how these factors differ between lightning-caused and human-caused wildfires." [@abatzoglou2018a]
 
-"As shown by Balch et al. (2017), human-caused fires occupy an environmental niche characterised by lower lightning- frequency and higher fuel moisture than lightning-caused fires. The present work complements those findings by demonstrating the likelihood of human ignitions evolving into large fires when facilitated by strong winds." [@abatzoglou2018]
+"As shown by Balch et al. (2017), human-caused fires occupy an environmental niche characterised by lower lightning- frequency and higher fuel moisture than lightning-caused fires. The present work complements those findings by demonstrating the likelihood of human ignitions evolving into large fires when facilitated by strong winds." [@abatzoglou2018a]
 
 ## Methods
 
@@ -87,7 +87,11 @@ If including the vegetation
 
 "Disruptive selection" language [@schluter1988].
 
+Calculated the stand decay coefficent (SDC) [@collins2017; @stevens2017]
+
 ## Results
+
+![Distribution of log fire event size faceted by management objective. While wildfire use fires exhibit a lognormal distribution in size, suppression fires exhibit clear multimodality.](../../figures/fire-size-histogram-by-management-objective.pdf)
 
 ## Discussion
 

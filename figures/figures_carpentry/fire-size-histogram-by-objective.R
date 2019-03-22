@@ -25,6 +25,9 @@ ggplot(md %>% filter(!is.na(objective)), aes(x = area_ha, fill = as.factor(objec
   geom_histogram(bins = 50) +
   scale_x_log10() +
   theme_bw() +
-  labs(fill = "Management\napproach")
+  labs(x = expression(Event ~ size ~ (log[10] ~ hectares)), 
+       y = "Count",
+       fill = "Management\nobjective")
+
 
 ggsave("figures/fire-size-histogram-by-management-objective.pdf")
