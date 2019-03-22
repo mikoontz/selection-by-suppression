@@ -41,12 +41,7 @@ fires_by_severity <-
 
 hi_sev_fires <- 
   fires_by_severity %>% 
-  dplyr::filter(sev_cat == 3,
-                is.na(burn_duration) | burn_duration > 0) %>% 
-  dplyr::left_join(fires %>% 
-                     st_drop_geometry() %>% 
-                     dplyr::select(fire_id, prop_ypmc),
-                   by = "fire_id")
+  dplyr::filter(sev_cat == 3)
 
 # function to approximate the stand replacing decay constant --------------
 
