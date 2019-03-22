@@ -1,0 +1,100 @@
+---
+title: "Untitled"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+We want to see how many fires might still be available to us to use if we subset by some characteristics. For example, perhaps we'll only look at fires that burned in majority (> 50% yellow pine/mixed-conifer), or we'll only look at fires that have valid burn durations (i.e., >0 to filter out the cases where the containment date and the alarm date were probably switched)
+
+```{r getData}
+library(tidyverse)
+library(sf)
+library(purrr)
+library(lubridate)
+
+metadata <- read_csv("data/data_raw/wildfire-severity_sierra-nevada-ca-usa_ypmc_1984-2017_fire-metadata.csv")
+# metadata with original FRAP perimeter attached
+# metadata_with_fire_perims <- st_read("data/data_raw/wildfire-severity_sierra-nevada-ca-usa_ypmc_1984-2017_fire-metadata.geoJSON")
+
+fires <- st_read("data/data_output/polygonized-fires-by-severity-classes.gpkg", stringsAsFactors = FALSE)
+
+# Length of time the fire was burning
+metadata <- 
+  metadata %>% 
+  dplyr::mutate(burn_duration = as.numeric(ymd(paste(cont_year, cont_month, cont_day, sep = "-")) - ymd(paste(alarm_year, alarm_month, alarm_day, sep = "-")))) %>% 
+  dplyr::mutate(objective = ifelse(is.na(objective),
+                                   yes = NA,
+                                   no = ifelse(objective == 1,
+                                               yes = "suppression",
+                                               no = "wfu")))
+
+fires <-
+  fires %>% 
+  dplyr::left_join(metadata, by = "fire_id") %>% 
+  dplyr::left_join(total_burned_area, by = "fire_id")
+
+```
+
+## Check some of the data
+
+You can also embed plots, for example:
+
+```{r data_checks, echo=FALSE}
+
+# 873 fires with a burn duration
+metadata %>% filter(burn_duration > 0)
+
+# Calculate the proportion burned in each severity class in ypmc
+total_burned_area <-
+  fires %>% 
+  st_drop_geometry() %>% 
+  dplyr::group_by(fire_id) %>% 
+  dplyr::summarize(fire_area_m2 = sum(sev_cat_area_m2),
+                   fire_area_m2_exclude_unchanged = sum(sev_cat_area_m2[sev_cat != 0]),
+                   sum_ypmc_direct_pixel_count = sum(ypmc_direct_pixel_count),
+                   sum_ypmc_direct_pixel_count_exclude_unchanged = sum(ypmc_direct_pixel_count[sev_cat != 0]),
+                   prop_ypmc = sum_ypmc_direct_pixel_count * 30 * 30 / fire_area_m2) %>% 
+  dplyr::ungroup()
+
+# 679 fires burned in majority YPMC
+total_burned_area %>% filter(prop_ypmc > 0.5)
+# 586 suppression fires, 79 wfu fires, 14 NA fires
+total_burned_area %>% left_join(metadata) %>% filter(prop_ypmc > 0.5) %>% dplyr::count(objective)
+
+# 537 fires burned in majority YPMC and with a burn_duration
+total_burned_area %>% left_join(metadata) %>% filter(prop_ypmc > 0.5, burn_duration > 0)
+# 450 suppression fires, 75 wfu fires, 12 NA fires
+total_burned_area %>% left_join(metadata) %>% filter(prop_ypmc > 0.5, burn_duration > 0) %>% dplyr::count(objective)
+
+# Let's exclude some fires that don't have good representation of severity within
+# the burn perimeter. This could occur if many of the pixels had to be masked out
+# within a perimeter because there are cloudy pre- or post-fire pixels
+# Still 99% of the fires have good severity coverage; this shouldn't be an issue
+total_burned_area %>% left_join(metadata) %>% filter(fire_area_m2 / 10000 > (0.99 * area_ha))
+
+
+fires_by_severity <-
+  fires_by_severity %>% 
+  dplyr::left_join(metadata, by = "fire_id")
+
+hi_sev_fires <- 
+  fires_by_severity %>% 
+  dplyr::filter(sev_cat == 3,
+                is.na(burn_duration) | burn_duration > 0) %>% 
+  dplyr::left_join(fires %>% 
+                     st_drop_geometry() %>% 
+                     dplyr::select(fire_id, prop_ypmc),
+                   by = "fire_id") %>% 
+  dplyr::filter(prop_ypmc > 0.50,
+                !is.na(objective))
+
+
+# 303 suppression fires burning in majority YPMC with high severity; 54 wfu fires burning in majority YPMC with high severity
+hi_sev_fires %>% st_drop_geometry() %>% group_by(objective) %>% tally()
+
+```
