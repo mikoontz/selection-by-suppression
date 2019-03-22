@@ -44,36 +44,31 @@ Date report generated: `r params$date_generated`
 
 ## Introduction
 
-Fire suppression is an oft-cited root cause of the modern trend of larger, more severe wildfires in the yellow pine/mixed-conifer forests of California's Sierra Nevada mountain range. While this system would experience frequent, low- to moderate-severity wildfire every 8 to 15 years in the several centuries prior to Euroamerican settlement, suppression management has effectively eliminated fire effects from much of western dry forested land in the past 100 years [@safford2017].
+Fire suppression is an oft-cited root cause of the modern trend of larger, more severe wildfires in the yellow pine/mixed-conifer forests of California's Sierra Nevada mountain range [@miller2007; @safford2017]. While this system would experience frequent, low- to moderate-severity wildfire every 8 to 15 years in the several centuries prior to Euroamerican settlement, suppression management has largely eliminated fire effects from much of western dry forested land in the past 100 years [@steel2015; @safford2017]. A lack of frequent fire has led to densification of Sierra yellow pine/mixed-conifer, which increases fuel loading and homogenizes forest structure [@stephens2018; @collins2016]. Fortuitous alignment of these extreme fuel conditions with earlier snowmelt, longer fire seasons, and hotter droughts (aka "climate change droughts") [@westerling2006; @westerling2016; @abatzoglou2013a; @abatzoglou2016] increases the probability that fires will generate self-propagating behavior [@coen2018] and burn at high severity [@koontz2019a] in large, contiguous patches [@stevens2017]. The Sierra yellow pine/mixed-conifer community is ill-adapted to regenerate in the centers of high-severity patches, which are far from seed sources [@welch2016], and thus these megadisturbances have negative consequences for long-term forest health [@millar2015; @stevens2017; @steel2018]. 
 
-Bimodal distribution of fire sizes under suppression policy: either the fires were quickly put out and remained very small, or they escaped suppression efforts and grew exceptionally large due to regional climate conspiring with accumulated fuel conditions. Indeed, @miller2017 found evidence for this pattern in that the average size of all fires is much smaller under a modern fire suppression management regime compared to pre-Euroamerican settlement fires (as one might intuitively expect given the goal of suppression is to reduce fire size), but the average size of larger fires (>4 hectares) is counter-intuitively much greater under modern suppression management. Many studies have suggested that adding more fire to the landscape is a way to return forests to pre-Euroamerican settlement resilient conditions [@north2015] (XXXXX Stephens, Stevens, Collins). This 
+Despite the long-term effects of fire suppression on wildfire trends, fire suppression generally is very effective at extinguishing fires. Between 1970 and 2002, the U.S. forest service contained over 97.5% of fires before they reached 120 hectares in size [@calkin2005]. In the Sierra yellow pine/mixed-conifer system, the vast majority of fires are managed for suppression (citation needed?) and 98.5% remain smaller than 80 hectares [@short2017]. The fires that remained small are often assumed to have burned under mild or moderate vegetation and climate conditions, facilitating initial suppression efforts. The fires that escape initial attack and grow large account for 97.5% of the total burned area of fires managed by the U.S. Forest Service [@calkin2005], and are often assumed to have grown to these sizes because they were burning under more extreme conditions. Thus, the cumulative effect of fire suppression policy has led to a management paradox with respect to maintaining forest health: *we shouldn't put out the fires that we can, but we can't put out the fires that we should*. 
 
-Gigantic fires with large, simple high severity patches are bad for forest health [@stevens2017; @steel2018]. These megafires are increasingly common [@millar2015] and arise from fortuitous alignment of extreme fuel and climate conditions that generate self-propagating fire behavior [@coen2018].
+Bimodal distribution of fire sizes under suppression policy: either the fires were quickly put out and remained very small, or they escaped suppression efforts and grew exceptionally large due to regional climate conspiring with accumulated fuel conditions. Indeed, @miller2017 found evidence for this pattern in that the average size of all fires is much smaller under a modern fire suppression management regime compared to pre-Euroamerican settlement fires (as one might intuitively expect given the goal of suppression is to stop fires to protect life and property), but the average size of larger fires (>4 hectares) is, perhaps counter-intuitively, much greater under modern suppression management [@safford2017; @miller2017]. Many studies have suggested that adding more fire to the landscape is a way to return forests to pre-Euroamerican settlement resilient conditions [@north2015; @stevens2017; @collins2017] (XXXXX Stephens) and some efforts are underway (SEKI reference? new USFS policies using some forest management units as testbeds for this idea?)
 
-Thus, the cumulative effect of fire suppression policy has led to a management paradox with respect to maintaining forest health: *we shouldn't put out the fires that we can, but we can't put out the fires that we should*. Climate change has complicated the paradox further. Earlier snowmelt, drier and hotter conditions, as well as longer fire seasons [@westerling2006; @westerling2016; @abatzoglou2013a; @abatzoglou2016].
+We use a new dataset of fire severity [@koontz2019] to measure this "selection by suppression" effect and ask:
 
-We use a comprehensive dataset of fire occurrence [@short2017] as well as a new dataset of fire severity [@koontz2019] to measure this "selection by suppression" effect.
+1) How do burning conditions (regional climate, vegetation density, vegetation continuity) vary between suppression and wildfire use fires?
 
+2) What are the consequences of these varying conditions for wildfire effects (burn duration, fire event size, severity configurations)?
 
-"A variety of environmental and social factors influence wildfire growth and whether a fire overcomes initial attack efforts and becomes a large wildfire. However, little is known about how these factors differ between lightning-caused and human-caused wildfires." [@abatzoglou2018a]
-
-"As shown by Balch et al. (2017), human-caused fires occupy an environmental niche characterised by lower lightning- frequency and higher fuel moisture than lightning-caused fires. The present work complements those findings by demonstrating the likelihood of human ignitions evolving into large fires when facilitated by strong winds." [@abatzoglou2018a]
+3) To what extent might prematurely extinguished suppression wildfires exhibit desireable fire effects, were they to be allowed to burn for longer? That is, are small suppression fires behaving like small wildfire use fires (and thus they should perhaps be left to burn and cover more area)?
 
 ## Methods
 
-Description of forest type. Using FRID designation of yellow pine/mixed-conifer to represent "potential vegetation" [@steel2018; @harvey2016b; @koontz2019a].
+### Study system
 
-Some summary stats of the Sierra Nevada yellow pine/mixed-conifer subset of the @short2017 fire occurrence dataset.
+The Sierra Nevada yellow pine/mixed-conifer (hereafter Sierra YPMC) is
+
+We designated Sierra YPMC using the FRID dataset and included "dry mixed-conifier", "moist mixed-conifer", and "yellow pine" vegetation types following @steel2018 and @koontz2019a]. These classifications represent "potential vegetation" given the climate of the area, such that there is no influence of recent disturbance events [@harvey2016b; @steel2018; @koontz2019a].
 
 Some summary stats of the @koontz2019 severity dataset.
 
 To do:
-
-Subset @short2017 into suppression/managed wildfire based on where it burns
-
-Upload this dataset as a shapefile to Earth Engine.
-
-Get initial burning conditions for each point using the algorithm from "remote sensing resilience" work.
 
 Analysis: regional climate conditions "selection" analysis akin to measuring the selection coefficient in evolutionary biology [@lande1983; @schluter1988].
 
@@ -89,19 +84,39 @@ If including the vegetation
 
 Calculated the stand decay coefficent (SDC) [@collins2017; @stevens2017]
 
+### Future work?
+
+Some summary stats of the Sierra Nevada yellow pine/mixed-conifer subset of the @short2017 fire occurrence dataset.
+
+Upload Sierra YPMC @short2017 subset to Earth Engine in order to get initial burning conditions for each point using the algorithm from "remote sensing resilience" work.
+
+Subset @short2017 into suppression/managed wildfire based on where it burns, using method of @steel2018.
+
+Use the expanded set of fires, and the relationships between fire size/SDC and covariates to extrapolate the potential added "good fire area" that might have burned if the @short2017 suppression fires weren't extinguished.
+
 ## Results
 
-![Distribution of log fire event size faceted by management objective. While wildfire use fires exhibit a lognormal distribution in size, suppression fires exhibit clear multimodality.](../../figures/fire-size-histogram-by-management-objective.pdf)
+![Distribution of log fire event size by management objective. While wildfire use fires exhibit a lognormal distribution in size, suppression fires exhibit clear multimodality.](../../figures/fire-size-histogram-by-management-objective.pdf)
+
+![A) Distribution of burn duration by management objective. Most suppression fires are quickly extinguished. B) Effect of burn duration on fire event size shows that there's a similar trajectory between suppressed and wildfire use fires except early in the burning period when suppression fires remain small. C) For fires with a high severity component, the stand replacing decay coefficient sharply declines for short-lived fires indicating that the high severity patches are larger and simpler which may reduce tree propagule pressure in the center of these patches and compromise dry forest regeneration. The SDC tends to increase with the burn duration for wildfire use fires. D) The high severity portion of the fire tends to increase with shorter-duration suppression fires, but is relatively constant across burn durations for wildfire use fires.](../../figures/burn-duration-4-panel.pdf)
+
+![The effect of the fire event size on the proportion of high severity fire by management objective. The effect appears to manifest for suppression fires starting at fires around 40 hectares in size.](../../figures/prop-high-severity-vs-event-size-by-objective.pdf)
 
 ## Discussion
 
-My plan is to write a paper about the interaction between fire size and suppression management using the new dataset of severity in YPMC that includes fires down to 4 hectares in size. 
+We have demonstrated a clear multi-modality in the fire event size distribution of wildfires managed with a suppression objective, and further measured the effect of this "selection by suppression" on the severity characteristics of these events. 
 
-The idea was originally suggested by Jennifer Balch as something she was curious about while I was interviewing for the Earth Lab postdoc. The development from there has largely been shaped by how you've talked about the "selection" effect of suppression resulting in especially large fires because the ones that grow large are only able to do so because they burn under extreme conditions. @steel2018 found only a small difference in the measure of regional climate during suppression versus wildfire use fires (modeled fuel moisture), which led to the conclusion that an "extreme fuel" effect underlied the differences in the size/configuration of high and unburned severity patches. But that analysis only included fires greater than 80 hectares in size, which is still pretty big. Analyzing big fires made sense for that paper, because they affect the most area, but if we want to suggest "let fires burn at more moderate weather conditions" as a mitigation strategy for a century of making fuel conditions more extreme, then I think this paper would serve the purpose of measuring the degree to which good work can be done by a fire (even in extreme fuel conditions) in milder weather conditions. 
+Suppression leads to especially large fires because the ones that grow large are only able to do so because they burn under extreme conditions. @steel2018 found only a small difference in the measure of regional climate during suppression versus wildfire use fires (modeled fuel moisture), which led to the conclusion that an "extreme fuel" effect underlied the differences in the size/configuration of high and unburned severity patches. 
 
-Good starting points:
+Essentially all of the suppression fires in Figure 2c that are within or above the confidence interval for the wildfire use fires had beneficial severity characteristics but were suppressed. Each of these fires represents potentially "lost area" of beneficial fire activity.
 
-Fire occurrence data: [@short2017]
-Papers on interacting effects of vegetation, regional climate, fire size, and severity patterns: [@cansler2014; @harvey2016b].
+But that analysis only included fires greater than 80 hectares in size, which is still pretty big. Analyzing big fires made sense for that paper, because they affect the most area, but if we want to suggest "let fires burn at more moderate weather conditions" as a mitigation strategy for a century of making fuel conditions more extreme, then I think this paper would serve the purpose of measuring the degree to which good work can be done by a fire (even in extreme fuel conditions) in milder weather conditions. 
+
+Interacting effects (and directional dependence) of vegetation, regional climate, fire size, and severity patterns: [@cansler2014; @harvey2016b].
+
+"A variety of environmental and social factors influence wildfire growth and whether a fire overcomes initial attack efforts and becomes a large wildfire. However, little is known about how these factors differ between lightning-caused and human-caused wildfires." [@abatzoglou2018a]
+
+"As shown by Balch et al. (2017), human-caused fires occupy an environmental niche characterised by lower lightning- frequency and higher fuel moisture than lightning-caused fires. The present work complements those findings by demonstrating the likelihood of human ignitions evolving into large fires when facilitated by strong winds." [@abatzoglou2018a]
+
 
 ## References
