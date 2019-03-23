@@ -39,19 +39,26 @@ fires_sdc <-
 
 ia <-
   fires_sdc %>% 
-  dplyr::filter(burn_duration > 0,
-                burn_duration < 365) %>% 
-  dplyr::mutate(survived_ia = ifelse(burn_duration > 3, yes = 1, no = 0))
+  dplyr::filter(is.na(burn_duration) | (burn_duration > 0 & burn_duration < 365)) %>% 
+  # dplyr::mutate(survived_ia = ifelse(burn_duration > 7, yes = 1, no = 0)) %>% 
+  dplyr::mutate(survived_ia = ifelse(is.na(burn_duration), yes = 1, no = 0))
 
-fm1 <- glm(survived_ia ~ scale(fire_area_m2 / 10000) + scale(prefire_ndvi) + scale(nbhd_sd_ndvi_1) + scale(earlyfire_hdw) + scale(elevation) + scale(sdc), data = ia, family = binomial())
+ia %>% 
+  group_by(survived_ia) %>% 
+  tally()
+
+fm1 <- glm(survived_ia ~ scale(log(fire_area_m2 / 10000, base = 10)) + 
+             scale(prefire_ndvi) + 
+             scale(nbhd_sd_ndvi_1) + 
+             scale(prefire_fm100) + 
+             scale(elevation) +
+             scale(sdc), 
+           data = ia, 
+           family = binomial())
+
 summary(fm1)
 
-# some models -------------------------------------------------------------
+ggplot(ia, aes(x = log(fire_area_m2 / 10000), fill = as.factor(survived_ia))) +
+  geom_histogram(bins = 100)
 
-
-fm1 <- randomForest(sdc ~ objective + prefire_vpd + elevation + prefire_ndvi + area_ha, data = fires, importance = TRUE, proximity = TRUE)
-
-fm2 <- lm(prefire_vpd ~ objective*area_ha, data = fires)
-
-fm2 <- lm(log(fires$sdc, base = 10) ~ objective + prefire_vpd + elevation + prefire_ndvi + area_ha, data = fires)
 

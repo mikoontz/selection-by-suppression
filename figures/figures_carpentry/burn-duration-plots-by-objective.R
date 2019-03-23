@@ -42,7 +42,7 @@ duration_distribution <-
   geom_histogram(alpha = 0.5, bins = max(fires_sdc$burn_duration)) +
   theme_bw() +
   labs(x = "Burn duration (days)",
-       y = "Probability density",
+       y = "Count",
        fill = "Management\nobjective")
 
 ggsave(plot = duration_distribution, filename = "figures/burn-duration-density-plot-by-objective.pdf")
