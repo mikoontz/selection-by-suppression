@@ -2,13 +2,10 @@
 
 library(sf)
 
+layers <- st_layers("data/data_raw/features/RDS-2013-0009.4_GDB/Data/FPA_FOD_20170508.gdb")
 fod <- st_read("data/data_raw/features/RDS-2013-0009.4_GDB/Data/FPA_FOD_20170508.gdb")
 sn <- st_read("data/data_output/jepson_sierra-nevada-ecoregion/jepson_sierra-nevada-ecoregion.shp") %>% 
   st_transform(3310)
-
-canv_fod <- 
-  fod %>% 
-  dplyr::filter(STATE %in% c("CA", "NV"))
 
 ca_fod <- 
   fod %>% 
@@ -17,15 +14,15 @@ ca_fod <-
 
 sn_fod <- ca_fod[sn, ]
 
-sn_fod
-range(sn_fod$FIRE_YEAR)
+ac_to_m2 <- function(ac) {return(ac * (66 * 660) * (0.0254 * 12 * 0.0254 * 12))}
+ac_to_r <- function(ac) {return(sqrt(ac_to_m2(ac) / pi))}
 
-plot(sn_fod$Shape)
+sn_fod_buffer <- st_buffer(sn_fod, dist = (ac_to_r(sn_fod$FIRE_SIZE)))
+plot(sn_fod_buffer$Shape)
 
-sn_fod
-
-st_write(obj = sn_fod, dsn = "data/data_output/sierra-nevada-short-fod/sierra-nevada-short-fod.shp")
-st_write(obj = st_transform(sn_fod, 4326), dsn = "data/data_output/sierra-nevada-short-fod-4326.geoJSON")
+st_write(obj = sn_fod, dsn = "data/data_output/sierra-nevada-short-fod.gpkg")
+# 
+# st_write(obj = st_transform(sn_fod, 4326), dsn = "data/data_output/sierra-nevada-short-fod-4326.geoJSON")
 
 
 table(sn_fod$FIRE_SIZE_CLASS) / nrow(sn_fod)
@@ -68,22 +65,3 @@ axis(side = 1, at = -2:5, labels = 10^(-2:5))
 abline(v = log(c(0.222, 10, 200, 1000), base = 10), col = 2:5)
 abline(h = log(1 -  ecdf(sn_fod$FIRE_SIZE[sn_fod$FIRE_SIZE > 0.222])(c(0.222, 10, 200, 1000)), base = 10), col = 2:5)
 legend("topright", legend = c("One Landsat pixel", "remote-sensing-resistance dataset cutoff", "USFS Region 5 Geospatial dataset cutoff", "MTBS dataset cutoff"), col = 2:5, lwd = 3, lty = 1)
-
-canada <- st_read("data/data_raw/NFDB_poly/NFDB_poly_20180726/NFDB_poly_20180726.shp", stringsAsFactors = FALSE)
-
-modern_canada <-
-  canada %>% 
-  dplyr::filter(YEAR >= 1984)
-
-modern_canada
-
-hist(log(modern_canada$SIZE_HA, base = 10), breaks = 1000)
-abline(v = log(0.081, base = 10), col = "red")
-abline(v = log(4, base = 10), col = "red")
-
-modern_canada_4ha <-
-  modern_canada %>%
-  dplyr::filter(SIZE_HA > 4) %>% 
-  dplyr::filter(!is.na(REP_DATE))
-
-modern_canada_4ha
