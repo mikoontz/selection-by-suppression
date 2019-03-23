@@ -23,7 +23,7 @@ header-includes:
   - \usepackage{setspace}
   - \doublespacing
   - \DeclareUnicodeCharacter{200E}{}
-output: pdf_document
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
