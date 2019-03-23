@@ -39,7 +39,7 @@ fires_sdc <-
 
 duration_distribution <-
   ggplot(fires_sdc, aes(x = burn_duration, fill = objective)) +
-  geom_density(alpha = 0.5) +
+  geom_histogram(alpha = 0.5, bins = max(fires_sdc$burn_duration)) +
   theme_bw() +
   labs(x = "Burn duration (days)",
        y = "Probability density",
@@ -92,8 +92,8 @@ shared_legend <- get_legend(duration_distribution)
 # build grid without legends
 pgrid <- plot_grid(duration_distribution_no_legend, 
                    event_size_v_duration_no_legend, 
-                   sdc_v_duration_no_legend, 
                    prop_high_v_duration_no_legend, 
+                   sdc_v_duration_no_legend,
                    ncol = 2,
                    labels = LETTERS[1:4])
 # add legend
