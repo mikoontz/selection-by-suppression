@@ -1,28 +1,81 @@
 # Purpose: subset the Fire Occurrence Dataset from Short (2015) to just Sierra Nevada fires
 
 library(sf)
+library(raster)
+library(fasterize)
+library(viridis)
+library(velox)
 
 layers <- st_layers("data/data_raw/features/RDS-2013-0009.4_GDB/Data/FPA_FOD_20170508.gdb")
-fod <- st_read("data/data_raw/features/RDS-2013-0009.4_GDB/Data/FPA_FOD_20170508.gdb")
+fod <- st_read("data/data_raw/features/RDS-2013-0009.4_GDB/Data/FPA_FOD_20170508.gdb", layer = "Fires")
+# nwcg <- st_read("data/data_raw/features/RDS-2013-0009.4_GDB/Data/FPA_FOD_20170508.gdb", layer = "NWCG_UnitIDActive_20170109")
+
 sn <- st_read("data/data_output/jepson_sierra-nevada-ecoregion/jepson_sierra-nevada-ecoregion.shp") %>% 
   st_transform(3310)
 
-ca_fod <- 
-  fod %>% 
-  dplyr::filter(STATE == "CA") %>% 
-  st_transform(3310)
+ypmc_raster <- raster::raster("data/data_output/frid-ypmc.tif")
 
-sn_fod <- ca_fod[sn, ]
+
+# helper functions to convert acres to metric -----------------------------
 
 ac_to_m2 <- function(ac) {return(ac * (66 * 660) * (0.0254 * 12 * 0.0254 * 12))}
 ac_to_r <- function(ac) {return(sqrt(ac_to_m2(ac) / pi))}
 
-sn_fod_buffer <- st_buffer(sn_fod, dist = (ac_to_r(sn_fod$FIRE_SIZE)))
-plot(sn_fod_buffer$Shape)
 
-st_write(obj = sn_fod, dsn = "data/data_output/sierra-nevada-short-fod.gpkg")
-# 
-# st_write(obj = st_transform(sn_fod, 4326), dsn = "data/data_output/sierra-nevada-short-fod-4326.geoJSON")
+# read the Sierra Nevada fod ----------------------------------------------
+
+
+if (!file.exists("data/data_output/sierra-nevada-short-fod.gpkg")) {
+  ca_fod <- 
+    fod %>% 
+    dplyr::filter(STATE == "CA") %>% 
+    st_transform(3310)
+  
+  sn_fod <- ca_fod[sn, ]
+  
+  st_write(obj = sn_fod, dsn = "data/data_output/sierra-nevada-short-fod.gpkg")
+} else {
+  sn_fod <- st_read("data/data_output/sierra-nevada-short-fod.gpkg")
+}
+
+# buffer each point by reported fire size ---------------------------------
+sn_fod_buffer <- st_buffer(sn_fod, dist = (ac_to_r(sn_fod$FIRE_SIZE)))
+
+# create higher resolution version of ypmc image --------------------------
+ypmc_hi_res <- raster::disaggregate(x = ypmc_raster, fact = 2)
+
+
+# convert to velox object -------------------------------------------------
+vx <- velox(ypmc_hi_res)
+
+# percent cover of ypmc in each polygon -----------------------------------
+pct_ypmc <- vx$extract(sp = sn_fod_buffer, fun = mean)
+sn_fod_buffer$prop_ypmc <- pct_ypmc
+
+
+# convert NA prop_ypmc back to points -------------------------------------
+unk_prop_ypmc <- 
+  sn_fod_buffer[is.na(sn_fod_buffer$prop_ypmc), ] %>% 
+  st_drop_geometry() %>% 
+  st_as_sf(coords = c("LONGITUDE", "LATITUDE"), crs = 4326, remove = FALSE) %>% 
+  st_transform(3310)
+
+
+# extract the ypmc pixels by points (all small fires) ---------------------
+pct_ypmc_for_unk <- vx$extract_points(sp = unk_prop_ypmc)
+sn_fod_buffer[is.na(sn_fod_buffer$prop_ypmc), "prop_ypmc"] <- pct_ypmc_for_unk
+
+
+# turn sf object back to points -------------------------------------------
+sn_ypmc_fod <- 
+  sn_fod_buffer %>% 
+  dplyr::filter(prop_ypmc > 0) %>% 
+  st_drop_geometry() %>% 
+  st_as_sf(coords = c("LONGITUDE", "LATITUDE"), crs = 4326, remove = FALSE) %>% 
+  st_transform(3310)
+
+st_write(obj = sn_ypmc_fod, dsn = "data/data_output/sierra-nevada-ypmc-short-fod.gpkg")
+
 
 
 table(sn_fod$FIRE_SIZE_CLASS) / nrow(sn_fod)
@@ -45,10 +98,10 @@ sn_fod_summary <-
   sn_fod %>% 
   dplyr::group_by(FIRE_SIZE_CLASS) %>% 
   dplyr::summarize(area_burned = sum(FIRE_SIZE),
-            prop_area_burned = area_burned / total_area_burned) %>% 
+                   prop_area_burned = area_burned / total_area_burned) %>% 
   dplyr::mutate(cumulative_sum_area = cumsum(area_burned),
-         cumulative_sum_prop = cumsum(prop_area_burned),
-         prop_greater = 1 - cumulative_sum_prop)
+                cumulative_sum_prop = cumsum(prop_area_burned),
+                prop_greater = 1 - cumulative_sum_prop)
 
 sn_fod_summary
 
