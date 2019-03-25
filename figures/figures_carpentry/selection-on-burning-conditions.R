@@ -1,13 +1,11 @@
-# Purpose: model the combined effects of suppression, regional climate, elevation, vegetation, fire size, stand replacing decay coefficient
-
 # Load libraries
 library(tidyverse)
-library(randomForest)
 library(sf)
+library(cowplot)
 
 # Read metadata file
 md <- read_csv("data/data_raw/wildfire-severity_sierra-nevada-ca-usa_ypmc_1984-2017_fire-metadata.csv")
-md_sf <- st_read("data/data_raw/wildfire-severity_sierra-nevada-ca-usa_ypmc_1984-2017_fire-metadata.geoJSON") %>% st_transform(3310)
+# md_sf <- st_read("data/data_raw/wildfire-severity_sierra-nevada-ca-usa_ypmc_1984-2017_fire-metadata.geoJSON") %>% st_transform(3310)
 sdc <- 
   read_csv("data/data_output/high-severity-fires-with-sdc.csv") %>% 
   dplyr::select(fire_id, sdc)
@@ -31,7 +29,7 @@ sev_cat_prop <-
                 prop_high = `3`)
 
 fires <-
-  md_sf %>% 
+  md %>% 
   dplyr::mutate(burn_duration = as.numeric(ymd(paste(cont_year, cont_month, cont_day, sep = "-")) - ymd(paste(alarm_year, alarm_month, alarm_day, sep = "-")))) %>% 
   left_join(fires_by_fire, by = "fire_id") %>% 
   dplyr::left_join(sev_cat_prop, by = "fire_id") %>% 
@@ -81,19 +79,55 @@ ia <-
   dplyr::filter(!is.na(burn_duration) & (burn_duration >= 0 & burn_duration < 365)) %>% 
   dplyr::mutate(survived_ia = ifelse(burn_duration > 1, yes = 1, no = 0))
 
-ia %>% 
-  st_drop_geometry() %>% 
-  group_by(survived_ia) %>% 
-  summarize(n = n(),
-            elev = mean(elevation, na.rm = TRUE),
-            size = median(area_ha))
+selection_on_event_size <-
+  ggplot(ia %>% dplyr::mutate(survived_ia = ifelse(survived_ia == 1, yes = "yes", no = "no")), aes(x = log(fire_area_m2 / 10000), fill = survived_ia)) +
+  geom_density(alpha = 0.5) +
+  # geom_histogram(alpha = 0.5, bins = 100) +
+  labs(x = expression(Fire ~ area ~ (log[10] ~ hectares)),
+       fill = "Escaped/`survived`\ninitial attack") +
+  theme_bw()
 
+selection_on_prefire_ndvi <-
+  ggplot(ia %>% dplyr::mutate(survived_ia = ifelse(survived_ia == 1, yes = "yes", no = "no")), aes(x = prefire_ndvi, fill = survived_ia)) +
+  geom_density(alpha = 0.5) +
+  # geom_histogram(alpha = 0.5, bins = 100) +
+  labs(x = "Prefire NDVI\n(higher is more extreme)",
+       fill = "Escaped/`survived`\ninitial attack") +
+  theme_bw()
 
-fm1 <- glm(survived_ia ~ scale(prefire_ndvi) + 
-             scale(nbhd_sd_ndvi_1) +
-             scale(prefire_erc), 
-           data = ia, 
-           family = binomial())
+selection_on_fuel_heterogeneity <-
+  ggplot(ia %>% dplyr::mutate(survived_ia = ifelse(survived_ia == 1, yes = "yes", no = "no")), aes(x = nbhd_sd_ndvi_1, fill = survived_ia)) +
+  geom_density(alpha = 0.5) +
+  # geom_histogram(alpha = 0.5, bins = 100) +
+  labs(x = "Prefire NDVI heterogeneity\n(lower is more extreme)",
+       fill = "Escaped/`survived`\ninitial attack") +
+  theme_bw()
 
-summary(fm1)
+selection_on_erc <-
+  ggplot(ia %>% dplyr::mutate(survived_ia = ifelse(survived_ia == 1, yes = "yes", no = "no")), aes(x = prefire_erc, fill = survived_ia)) +
+  geom_density(alpha = 0.5) +
+  # geom_histogram(alpha = 0.5, bins = 100) +
+  labs(x = "Prefire Energy Release Component (ERC)\n(higher is more extreme)",
+       fill = "Escaped/`survived`\ninitial attack") +
+  theme_bw()
 
+selection_on_erc
+
+shared_legend = get_legend(selection_on_event_size)
+
+selection_on_event_size
+selection_on_prefire_ndvi
+selection_on_fuel_heterogeneity
+selection_on_erc
+
+panel_grid <- plot_grid(selection_on_event_size + theme(legend.position = "none"),
+                        selection_on_prefire_ndvi + theme(legend.position = "none"),
+                        selection_on_fuel_heterogeneity + theme(legend.position = "none"),
+                        selection_on_erc + theme(legend.position = "none"),
+                        nrow = 2, ncol = 2,
+                        labels = LETTERS[1:4])
+
+selection_panel_plot <- plot_grid(panel_grid, shared_legend, rel_widths = c(1, 0.1))
+selection_panel_plot
+
+ggsave(plot = selection_panel_plot, filename = "figures/selection-on-burning-conditions.pdf")
