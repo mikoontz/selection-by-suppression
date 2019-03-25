@@ -74,23 +74,40 @@ sn_ypmc_fod <-
   st_as_sf(coords = c("LONGITUDE", "LATITUDE"), crs = 4326, remove = FALSE) %>% 
   st_transform(3310)
 
-st_write(obj = sn_ypmc_fod, dsn = "data/data_output/sierra-nevada-ypmc-short-fod.gpkg")
+sn_ypmc_fod_shp <- 
+  sn_fod_buffer %>% 
+  dplyr::filter(prop_ypmc > 0) %>% 
+  st_drop_geometry() %>% 
+  st_as_sf(coords = c("LONGITUDE", "LATITUDE"), crs = 4326, remove = FALSE) %>% 
+  dplyr::mutate(alarm_date = ymd(DISCOVERY_DATE)) %>% 
+  dplyr::mutate(cont_date = ymd(CONT_DATE)) %>% 
+  dplyr::rename(fod_id = FOD_ID,
+                fpa_id = FPA_ID,
+                fire_size = FIRE_SIZE,
+                cause_code = STAT_CAUSE_CODE,
+                cause_desc = STAT_CAUSE_DESCR) %>% 
+  dplyr::select(fod_id, fpa_id, fire_size, alarm_date, cont_date, prop_ypmc)
+
+st_write(obj = sn_ypmc_fod, dsn = "data/data_output/sierra-nevada-ypmc-short-fod.gpkg", delete_dsn = TRUE)
+st_write(obj = sn_ypmc_fod_shp, dsn = "data/data_output/sierra-nevada-ypmc-short-fod/sierra-nevada-ypmc-short-fod.shp", delete_dsn = TRUE)
 
 
+# Some summaries of the Sierra Nevada data --------------------------------
+# Still need to do for the ypmc
 
-table(sn_fod$FIRE_SIZE_CLASS) / nrow(sn_fod)
-cumsum(table(sn_fod$FIRE_SIZE_CLASS) / nrow(sn_fod))
+table(sn_ypmc_fod$FIRE_SIZE_CLASS) / nrow(sn_ypmc_fod)
+cumsum(table(sn_ypmc_fod$FIRE_SIZE_CLASS) / nrow(sn_ypmc_fod))
 
-fire_size_ecdf <- ecdf(sn_fod$FIRE_SIZE)
+fire_size_ecdf <- ecdf(sn_ypmc_fod$FIRE_SIZE)
 
 # Percent of fire events that are smaller than a single Landsat pixel (30m x 30m or about 0.222 acres)
-fire_size_ecdf(0.222) # 0.5437291
+fire_size_ecdf(0.222) # 0.6143517
 # Percent of fire events that are smaller in size than the 4 hectare cutoff for remote-sensing-resistance dataset
-fire_size_ecdf(10) # 0.9410107
+fire_size_ecdf(10) # 0.9488143
 # Percent of fire events that are smaller in size than the 80 hectare cutoff for the Region 5 Geospatial dataset
-fire_size_ecdf(200) # 0.9860923
+fire_size_ecdf(200) # 0.9793656
 # Percent of fire events that are smaller in size than the 1000 acre cutoff for the MTBS dataset
-fire_size_ecdf(1000) # 0.9942746
+fire_size_ecdf(1000) # 0.9887281
 
 total_area_burned <- sum(sn_fod$FIRE_SIZE)
 
