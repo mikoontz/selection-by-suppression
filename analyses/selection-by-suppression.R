@@ -2,18 +2,19 @@
 
 # Load libraries
 library(tidyverse)
-library(randomForest)
 library(sf)
+library(lubridate)
+library(here)
 
 # Read metadata file
-md <- read_csv("data/data_raw/wildfire-severity_sierra-nevada-ca-usa_ypmc_1984-2017_fire-metadata.csv")
-md_sf <- st_read("data/data_raw/wildfire-severity_sierra-nevada-ca-usa_ypmc_1984-2017_fire-metadata.geoJSON") %>% st_transform(3310)
+md <- read_csv(here::here("data/data_raw/wildfire-severity_sierra-nevada-ca-usa_ypmc_1984-2017_fire-metadata.csv"))
+md_sf <- st_read(here::here("data/data_raw/wildfire-severity_sierra-nevada-ca-usa_ypmc_1984-2017_fire-metadata.geoJSON")) %>% st_transform(3310)
 sdc <- 
-  read_csv("data/data_output/high-severity-fires-with-sdc.csv") %>% 
+  read_csv(here::here("data/data_output/high-severity-fires-with-sdc.csv")) %>% 
   dplyr::select(fire_id, sdc)
 
-fires_by_fire <- read_csv("data/data_output/polygonized-fires-by-fire.csv")
-fires_by_severity <- read.csv("data/data_output/polygonized-fires-by-severity-classes.csv")
+fires_by_fire <- read_csv(here::here("data/data_output/polygonized-fires-by-fire.csv"))
+fires_by_severity <- read.csv(here::here("data/data_output/polygonized-fires-by-severity-classes.csv"))
 
 # short_fires <- st_read("data/data_output/sierra-nevada-ypmc-short-fod.gpkg") %>% dplyr::rename(fod_id = FOD_ID)
 # ee_short_fires <- 

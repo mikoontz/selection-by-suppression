@@ -11,3 +11,6 @@ http://frap.fire.ca.gov/data/frapgisdata-sw-fireperimeters_download
 
 Metadata details for fire severity dataset:
 http://frap.fire.ca.gov/projects/fire_data/fire_perimeters_data_description
+
+Fire Return Interval Depature dataset (for designated yellow pine/mixed-conifer presettlement fire regimes):
+https://www.fs.usda.gov/detail/r5/landmanagement/gis/?cid=STELPRDB5327836
