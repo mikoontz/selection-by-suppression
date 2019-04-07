@@ -14,3 +14,5 @@ http://frap.fire.ca.gov/projects/fire_data/fire_perimeters_data_description
 
 Fire Return Interval Depature dataset (for designated yellow pine/mixed-conifer presettlement fire regimes):
 https://www.fs.usda.gov/detail/r5/landmanagement/gis/?cid=STELPRDB5327836
+
+The Google Earth Engine code is in its own git repository, but is included in this repository as a *submodule*. You should still be able to clone all the code in this submodule (you'll have to log in with a Google account, but it need not be an account that has access to Earth Engine)-- check out [this link](https://gist.github.com/gitaarik/8735255) for some more info on how you might go about this.
