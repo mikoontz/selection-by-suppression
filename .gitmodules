@@ -1,0 +1,3 @@
+[submodule "ee-selection-by-suppression"]
+	path = ee-selection-by-suppression
+	url = https://earthengine.googlesource.com/users/mkoontz/ee-selection-by-suppression
