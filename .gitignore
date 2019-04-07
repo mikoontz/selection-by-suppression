@@ -9,5 +9,6 @@ data/data_output/sierra-nevada-short-fod-4326.geoJSON
 data/data_output/sierra-nevada-short-fod/*
 .DS_Store
 docs/manuscript/selection-by-suppression.tex
+docs/manuscript/feedback/*
 data/data_output/polygonized-fires-by-severity-classes.gpkg
 data/data_raw/features/FRID-sierra-nevada/*
