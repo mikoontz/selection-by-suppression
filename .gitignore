@@ -12,3 +12,4 @@ docs/manuscript/selection-by-suppression.tex
 docs/manuscript/feedback/*
 data/data_output/polygonized-fires-by-severity-classes.gpkg
 data/data_raw/features/FRID-sierra-nevada/*
+*~$*.docx
