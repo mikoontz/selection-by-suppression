@@ -2,7 +2,7 @@
 bibliography: ../docs_carpentry/selection-by-suppression.bib
 csl: ../docs_carpentry/frontiers-in-ecology-and-the-environment.csl
 params:
-  title: Selection by suppression
+  title: Initial attack wildfire suppression selects for extreme burning conditions
   author: |
     Michael J. Koontz^1,2,\*^,
     Zachary L. Steel^3^,
@@ -23,7 +23,7 @@ header-includes:
   - \usepackage{setspace}
   - \doublespacing
   - \DeclareUnicodeCharacter{200E}{}
-output: word_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -52,18 +52,33 @@ source(here::here("analyses/selection-by-suppression.R"))
 # Model object is `fm1`
 ```
 
-## Abstract
+## Executive summary (to become abstract)
+
+Most wildfires in the western U.S. are managed for suppression. This is usually effective at keeping fires small. It is often assumed that the fires that grow large do so because they burn under extreme fuel and climate conditions. We quantify this "selection" effect using an evolutionary ecology framework and discuss implications for management.
+
+
+## Abstract 
+
+Wildfires typically undergo active suppression efforts in forests of the western U.S.A. A vast majority of these wildfires are extinguished during "initial attack" suppression within the first few days after their discovery, which constrains the area of vegetation that they effect. In the long run, the reduced footprint of fire in the drier, lower elevation forests of the western U.S. has led to a dramatic buildup of fuel such that 
+
+In the short run, this reduces the footprint of fire in these forests. In the long run, buildup of fuel in the drier, lower elevation forests of the region 
+
+
+A century of such a policy has enabled dramatic densification of low- to mid-elevation dry and mesic forests in the west, with yellow pine/mixed-conifer forests of California's Sierra Nevada range being a prime example. 
+
+The dominant management approach for wildfires in yellow pine/mixed-conifer forests of the Sierra Nevada mountain range, as it is for many western U.S. forests, is full suppression. "Initial attack" efforts within the first few days of discovering a new ignition prioritized extinguishing 
+
+Thus "large" modern fires in this system are often considered "bad" fires with respect to forest health. However, this correlation may be confounded by the extreme conditions under which "large" fires grow large. Ideally, there'd be a more extensive fire footprint 
 
 ## Introduction
 
-Fire suppression is an oft-cited root cause of the modern trend of larger, more severe wildfires in the yellow pine/mixed-conifer forests of California's Sierra Nevada mountain range [@calkin2015; @miller2007; @safford2017]. While most of this system would experience frequent, low- to moderate-severity wildfire every 8 to 15 years in the several centuries prior to Euroamerican settlement, suppression management has largely eliminated fire effects from much of western dry forested land in the past 100 years [@steel2015; @safford2017]. A lack of frequent fire has led to densification of Sierra yellow pine/mixed-conifer, which increases fuel loading and homogenizes forest structure [@stephens2018; @collins2016]. Fortuitous alignment of these extreme fuel conditions with earlier snowmelt, longer fire seasons, and hotter droughts (aka "climate change droughts") [@westerling2006; @westerling2016; @abatzoglou2013a; @abatzoglou2016] increases the probability that fires will generate self-propagating behavior [@coen2018] and kill all (or nearly all) overstory vegetation [@koontz2019a] in large, contiguous patches of mortality [@stevens2017]. The Sierra yellow pine/mixed-conifer community is ill-adapted to regenerate in the centers of these large patches, which are far from seed sources [@welch2016], and thus the modern trend of atypically large, contiguous, stand-replacing fires in this system compromise forest health and increase the potential for long-term shifts in vegetation type to shrub- or grasslands [@millar2015; @stevens2017; @steel2018]. 
+Fire suppression is an oft-cited root cause of the modern trend of larger, more severe wildfires in the yellow pine/mixed-conifer forests of California's Sierra Nevada mountain range [@calkin2015; @miller2007; @safford2017]. While most of this system would experience frequent, low- to moderate-severity wildfire every 8 to 15 years in the several centuries prior to Euroamerican settlement, suppression management has largely eliminated fire effects from much of western dry forested land in the past 100 years [@steel2015; @safford2017; @miller2017]. A lack of frequent fire has led to densification of Sierra yellow pine/mixed-conifer, which increases fuel loading and homogenizes forest structure [@stephens2018; @collins2016]. Fortuitous alignment of these extreme fuel conditions with earlier snowmelt, longer fire seasons, and hotter droughts (aka "climate change droughts") [@westerling2006; @westerling2016; @abatzoglou2013a; @abatzoglou2016] increases the probability that fires will generate self-propagating behavior [@coen2018] and kill all (or nearly all) overstory vegetation [@koontz2019a] in large, contiguous patches of mortality [@stevens2017]. The Sierra yellow pine/mixed-conifer community is ill-adapted to regenerate in the centers of these large patches, which are far from seed sources [@welch2016], and thus the modern trend of atypically large, contiguous, stand-replacing fires in this system compromise forest health and increase the potential for long-term shifts in vegetation type to shrub- or grasslands [@millar2015; @stevens2017; @steel2018]. 
 
 Despite the long-term effects of fire suppression on wildfire trends, fire suppression generally is very effective at its immediate goal of extinguishing fires. Between 1970 and 2002, over 97% of fires burning on U.S. Forest Service land were contained during "initial attack" suppression before they reached 120 hectares in size [@calkin2005; @calkin2015]. 
 
-In the western U.S., including the Sierra yellow pine/mixed-conifer system, the vast majority of fires are managed for suppression, though a small number of natural ignitions are allowed to burn under moderate conditions in "resource benefit" or "wildland fire use" fires in recognition of the important role that fire plays in many healthy forest systems [@calkin2015].
+In the western U.S., including the Sierra yellow pine/mixed-conifer system, the vast majority of fires are managed for suppression, though a small number of natural ignitions are allowed to burn under moderate conditions in "resource benefit", "resource objective", or "wildland fire use" fires in recognition of the important role that fire plays in many healthy forest systems [@davis1979; @meyer2015; @calkin2015].
 
 The fires that remained small are often assumed to have burned under mild or moderate vegetation and climate conditions, facilitating initial suppression efforts. The fires that escape initial attack and grow large account for 97.5% of the total burned area of fires managed by the U.S. Forest Service [@calkin2005], and are often assumed to have grown to these sizes because they were burning under more extreme conditions. 
-
 
 "Essentially, through our management efforts we have changed the distribution of fire behavior to only the most extreme." [@calkin2015].
 
@@ -71,7 +86,7 @@ Thus, the general short-term success of fire suppression policy paired with its 
 
 Bimodal distribution of fire sizes under suppression policy: either the fires were quickly put out and remained very small, or they escaped suppression efforts and grew exceptionally large due to regional climate conspiring with accumulated fuel conditions. Indeed, @miller2017 found evidence for this pattern in that the average size of all fires is much smaller under a modern fire suppression management regime compared to pre-Euroamerican settlement fires (as one might intuitively expect given the goal of suppression is to stop fires to protect life and property), but the average size of larger fires (>4 hectares) is, perhaps counter-intuitively, much greater under modern suppression management [@safford2017; @miller2017]. 
 
-Many studies have suggested that adding more fire to the landscape is a way to return forests to pre-Euroamerican settlement resilient conditions [@north2015; @stevens2017; @collins2017] and some efforts are underway though barriers remain [@doane2006; @calkin2015].
+Many studies have suggested that adding more fire to the landscape is a way to return forests to pre-Euroamerican settlement resilient conditions [@mallek2013; @north2015; @stevens2017; @collins2017] and some efforts are underway though barriers remain [@doane2006; @calkin2015].
 
 We use a new dataset of fire severity [@koontz2019] to measure this "selection by suppression" effect and ask:
 
@@ -95,7 +110,7 @@ We compiled the Sierra YPMC type using the U.S. Forest Service Fire Return Inter
 
 The CalFire Fire Resource and Protection Program (FRAP; http://frap.fire.ca.gov/) maintains the most comprehensive datset of wildfire perimeters in the state of California, including attribute data for each fire such as its discovery date, its containment date, and the management objective. The management objective represents the approach taken by the management unit overseeing the wildfire-- either "suppression", with a goal of extinguishing the fire, or "wildland fire use", with a goal of allowing the fire to burn so long as it didn't threaten lives or property. This dataset contains all fires >4 hectares, and thus has greater representation of fire events compared to other wildfire events datasets, though it lacks severity information. For instance, the Monitoring Trends in Burn Severity (MTBS) database only contains wildires in the western U.S. that are larger than 400 hectares [@eidenshink2007] and the U.S. Forest Service Region 5 geospatial database contains wildfires in the Sierra Nevada that are larger than 80 hectares [@steel2018], though both of these datasets contain information on wildfire severity. 
 
-A previous study used the expanded FRAP dataset of over 1,000 wildfire perimeters to calculate wildfire severity and calibrate satellite-derived measures using ground-based overstory composite burn index (CBI) [@koontz2019a], which is an integrated measure of the effect of a wildfire on the forest overstory one year after the burn [@key2006]. CBI correlates well with direct measures of fire impact to vegetation in Sierra YPMC, such as percent of overstory mortality [@miller2007].
+@koontz2019 used the expanded FRAP dataset of over 1,000 wildfire perimeters to calculate wildfire severity and calibrate satellite-derived measures using ground-based overstory composite burn index (CBI) [@koontz2019a], which is an integrated measure of the effect of a wildfire on the forest overstory one year after the burn [@key2006]. CBI correlates well with direct measures of fire impact to vegetation in Sierra YPMC, such as percent of overstory mortality [@miller2007].
 
 In addition to mapping wildfire severity across each fire in the FRAP perimeter database, @koontz2019a also calculated fuel and regional climate variables within the burn perimeter. The prefire Normalized Difference Vegetation Index (NDVI; @rouse1973]) was found to correlate strongly with wildfire severity, as was the standard deviation of NDVI within the 90m x 90m window surrounding each pixel, which represents a measure of horizontal forest structure and fuel continuity [@koontz2019a]. The gridMET product [@abatzoglou2013] was used to calculate the median 100-hour fuel moisture, energy release component, and vapor pressure deficit for the 3 days prior to each fire's discovery date, which captures  regional climate conditions over time periods of several days, but not very local weather events that might occur over the span of hours. Each of these variables has a strong impact on wildfire behavior at macroscales [@abatzoglou2013a].
 
@@ -139,7 +154,7 @@ stargazer(fm1, header = FALSE)
 
 ### Implications of selection by suppression
 
-Comparison to wildland fire use fires...
+Comparison to wildland fire use fires by treating these fires as the "wild type" in the evolutionary ecology framing.
 
 
 ![Distribution of log fire event size by management objective. While wildfire use fires exhibit a lognormal distribution in size, suppression fires exhibit clear multimodality.](../../figures/fire-size-histogram-by-management-objective.pdf)
