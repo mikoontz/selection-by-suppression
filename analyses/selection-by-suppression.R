@@ -98,3 +98,62 @@ fm1 <- glm(survived_ia ~ scale(prefire_ndvi) +
 
 summary(fm1)
 
+fm2 <- glm(survived_ia ~ scale(prefire_ndvi) + 
+             scale(nbhd_sd_ndvi_1) +
+             scale(prefire_erc) +
+             scale(earlyfire_vs), 
+           data = ia, 
+           family = binomial())
+
+summary(fm2)
+
+hist(fires_compare$simultaneous_fires)
+
+fires_compare %>% group_by(cause) %>% tally()
+fires_compare %>% filter(objective == "suppression" & cause == 18)
+
+fm2 <- glm(survived_ia ~ scale(prefire_ndvi) + 
+             scale(nbhd_sd_ndvi_1) +
+             scale(prefire_erc) +
+             scale(earlyfire_vs) +
+             scale(simultaneous_fires), 
+           data = fires_compare %>% 
+             dplyr::filter(objective == "suppression") %>% 
+             dplyr::filter(cause != 18), 
+           family = binomial())
+summary(fm2)
+
+
+fm2b <- glm(survived_ia ~ scale(prefire_ndvi) + 
+              scale(nbhd_sd_ndvi_1) +
+              scale(prefire_erc) +
+              scale(earlyfire_vs) +
+              scale(simultaneous_fires), 
+            data = fires_compare %>% 
+              dplyr::filter(objective == "suppression") %>% 
+              dplyr::filter(cause != 18), 
+            family = binomial())
+summary(fm2b)
+
+fm2c <- glm(survived_ia ~ scale(prefire_ndvi) + 
+              scale(nbhd_sd_ndvi_1) +
+              scale(prefire_erc) +
+              scale(earlyfire_vs),
+            data = fires_compare %>% 
+              dplyr::filter(objective == "suppression") %>% 
+              dplyr::filter(cause != 18) %>% 
+              dplyr::filter(simultaneous_fires < 21), 
+            family = binomial())
+summary(fm2c)
+
+fm3 <- glm(escaped_rx ~ scale(prefire_ndvi) + 
+             scale(nbhd_sd_ndvi_1) +
+             scale(prefire_erc) +
+             scale(earlyfire_vs) +
+             scale(simultaneous_fires), 
+           data = fires_compare %>% 
+             dplyr::filter(objective == "wfu" | cause == 18) %>% 
+             dplyr::mutate(escaped_rx = ifelse(cause == 18, yes = 1, no = 0)), 
+           family = binomial())
+summary(fm3)
+
