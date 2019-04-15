@@ -115,10 +115,10 @@ selection_on_erc
 
 shared_legend = get_legend(selection_on_event_size)
 
-selection_on_event_size
-selection_on_prefire_ndvi
-selection_on_fuel_heterogeneity
-selection_on_erc
+selection_on_event_size + geom_density(data = fires_sdc %>% filter(objective == "wfu"), aes(x = log(fire_area_m2 / 10000)), inherit.aes = FALSE)
+selection_on_prefire_ndvi + geom_density(data = fires_sdc %>% filter(objective == "wfu"), aes(x = prefire_ndvi), inherit.aes = FALSE)
+selection_on_fuel_heterogeneity + geom_density(data = fires_sdc %>% filter(objective == "wfu"), aes(x = nbhd_sd_ndvi_1), inherit.aes = FALSE)
+selection_on_erc + geom_density(data = fires_sdc %>% filter(objective == "wfu"), aes(x = prefire_erc), inherit.aes = FALSE)
 
 panel_grid <- plot_grid(selection_on_event_size + theme(legend.position = "none"),
                         selection_on_prefire_ndvi + theme(legend.position = "none"),
