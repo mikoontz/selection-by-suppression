@@ -3,81 +3,13 @@ library(tidyverse)
 library(sf)
 library(cowplot)
 
-# Read metadata file
-md <- read_csv("data/data_raw/wildfire-severity_sierra-nevada-ca-usa_ypmc_1984-2017_fire-metadata.csv")
-# md_sf <- st_read("data/data_raw/wildfire-severity_sierra-nevada-ca-usa_ypmc_1984-2017_fire-metadata.geoJSON") %>% st_transform(3310)
-sdc <- 
-  read_csv("data/data_output/high-severity-fires-with-sdc.csv") %>% 
-  dplyr::select(fire_id, sdc)
-
-fires_by_fire <- read_csv("data/data_output/polygonized-fires-by-fire.csv")
-fires_by_severity <- read.csv("data/data_output/polygonized-fires-by-severity-classes.csv")
-
-# short_fires <- st_read("data/data_output/sierra-nevada-ypmc-short-fod.gpkg") %>% dplyr::rename(fod_id = FOD_ID)
-# ee_short_fires <- 
-#   st_read("data/data_output/ee_short-burning-conditions_48-day-window_L4578_bicubic.geojson") %>% 
-#   st_drop_geometry() %>% 
-#   dplyr::select(fod_id, alarm_date, cont_date, fire_size, prop_ypmc, elev, earlyFfm100, fm100, hdw, vs, vpd, RBR, preFire_ndvi, het_ndvi_1, focal_mean_ndvi_1)
-
-sev_cat_prop <-
-  fires_by_severity %>% 
-  dplyr::select(fire_id, sev_cat, sev_cat_prop) %>% 
-  tidyr::spread(key = sev_cat, value = sev_cat_prop, fill = 0) %>% 
-  dplyr::rename(prop_unchanged = `0`,
-                prop_low = `1`,
-                prop_mod = `2`,
-                prop_high = `3`)
-
-fires <-
-  md %>% 
-  dplyr::mutate(burn_duration = as.numeric(ymd(paste(cont_year, cont_month, cont_day, sep = "-")) - ymd(paste(alarm_year, alarm_month, alarm_day, sep = "-")))) %>% 
-  left_join(fires_by_fire, by = "fire_id") %>% 
-  dplyr::left_join(sev_cat_prop, by = "fire_id") %>% 
-  dplyr::filter(!is.na(objective)) %>% 
-  dplyr::mutate(objective = ifelse(objective == 1, yes = "suppression", no = "wfu"))
-
-
-fires_sdc <-
-  fires %>% 
-  left_join(sdc, by = "fire_id")
-
-# Successful initial attack versus failed initial attack based
-# on burn duration
-
-# Pier fire was definitely not contained in 2 days. Contained on 2017-11-29, not 2017-08-30?
-# 0000f67fc2d69fe5c384
-fires_sdc$cont_month[fires_sdc$fire_id == "0000f67fc2d69fe5c384"] = 11
-fires_sdc$cont_day[fires_sdc$fire_id == "0000f67fc2d69fe5c384"] = 29
-fires_sdc$burn_duration[fires_sdc$fire_id == "0000f67fc2d69fe5c384"] = 92
-
-# Cedar fire was definitely not contained the same day it started. Contained on 206-10-01
-# 000098483297cad8ed1f
-# http://cdfdata.fire.ca.gov/incidents/incidents_details_info?incident_id=1392
-fires_sdc$cont_month[fires_sdc$fire_id == "000098483297cad8ed1f"] = 10
-fires_sdc$cont_day[fires_sdc$fire_id == "000098483297cad8ed1f"] = 1
-fires_sdc$burn_duration[fires_sdc$fire_id == "000098483297cad8ed1f"] = 46
-
-# Round Fire in 2015 was 2015-02-06 to 2015-02-12; not just 2 days
-# 0000b2e869b63ddf6a4f
-# http://cdfdata.fire.ca.gov/incidents/incidents_details_info?incident_id=1073
-fires_sdc$alarm_day[fires_sdc$fire_id == "0000b2e869b63ddf6a4f"] = 6
-fires_sdc$cont_day[fires_sdc$fire_id == "0000b2e869b63ddf6a4f"] = 12
-fires_sdc$burn_duration[fires_sdc$fire_id == "0000b2e869b63ddf6a4f"] = 6 
-
-# Containment fire day estimated for Chilcoot Fire? Include?
-# 0000af58f72ef9d1239b
-
-# wfu <-
-#   fires_sdc %>% 
-#   dplyr::filter(objective == "wfu")
-# 
-# quantile(wfu$burn_duration, prob = c(0.01, 0.05, 0.10, 0.25, 0.5), na.rm = TRUE)
+fires <- read_csv("data/data_output/merged-data-and-derived-variables.csv")
 
 ia <-
-  fires_sdc %>% 
+  fires %>% 
   dplyr::filter(objective == "suppression") %>% 
-  dplyr::filter(!is.na(burn_duration) & (burn_duration >= 0 & burn_duration < 365)) %>% 
-  dplyr::mutate(survived_ia = ifelse(burn_duration > 1, yes = 1, no = 0))
+  dplyr::filter(prop_ypmc > 0.5)
+
 
 selection_on_event_size <-
   ggplot(ia %>% dplyr::mutate(survived_ia = ifelse(survived_ia == 1, yes = "yes", no = "no")), aes(x = log(fire_area_m2 / 10000), fill = survived_ia)) +
