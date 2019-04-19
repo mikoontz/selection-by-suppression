@@ -26,7 +26,10 @@ short_fires <- st_read("data/data_output/sierra-nevada-ypmc-short-fod.gpkg") %>%
 ee_short_fires <-
   st_read("data/data_output/ee_short-burning-conditions_48-day-window_L4578_bicubic.geojson") %>%
   st_drop_geometry() %>%
-  dplyr::select(fod_id, alarm_date, cont_date, fire_size, prop_ypmc, elev, earlyFfm100, fm100, hdw, vs, vpd, RBR, preFire_ndvi, het_ndvi_1, focal_mean_ndvi_1)
+  dplyr::select(fod_id, alarm_date, cont_date, fire_size, prop_ypmc, elev, earlyFfm100, fm100, hdw, vs, vpd, RBR, preFire_ndvi, het_ndvi_1, focal_mean_ndvi_1) %>% 
+  dplyr::mutate(alarm_date = as_date(epoch + milliseconds(alarm_date)),
+                cont_date = as_date(epoch + milliseconds(cont_date)),
+                burn_duration = as.numeric(cont_date - alarm_date))
 
 write_csv(ee_short_fires, path = "data/data_output/short-fpafod-sierra-ypmc-nonspatial.csv")
 

@@ -8,10 +8,7 @@ library(here)
 epoch <- ymd("1970-01-01")
 
 sn_ypmc_fod <- 
-  read_csv(here::here("data/data_output/short-fpafod-sierra-ypmc-nonspatial.csv")) %>% 
-  dplyr::mutate(alarm_date = as_date(epoch + milliseconds(alarm_date)),
-                cont_date = as_date(epoch + milliseconds(cont_date)),
-                burn_duration = as.numeric(cont_date - alarm_date))
+  read_csv(here::here("data/data_output/short-fpafod-sierra-ypmc-nonspatial.csv"))
 
 short_fire_size <-
   ggplot(sn_ypmc_fod %>% dplyr::filter(prop_ypmc > 0.5), aes(log(fire_size, base = 10))) +
