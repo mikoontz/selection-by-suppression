@@ -30,4 +30,4 @@ ggplot(md %>% filter(!is.na(objective)), aes(x = area_ha, fill = as.factor(objec
        fill = "Management\nobjective")
 
 
-ggsave("figures/fire-size-histogram-by-management-objective.pdf")
+ggsave("figures/fire-size-histogram-by-management-objective.png")
