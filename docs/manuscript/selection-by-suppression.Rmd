@@ -12,7 +12,7 @@ params:
     ^1^Graduate Group in Ecology, University of Californa, Davis, CA, USA  
     ^2^Department of Plant Sciences, University of California, Davis, CA, USA  
     ^3^Department of Environmental Science and Policy, University of California, Berkeley, CA, USA  
-    ^4^USDA Forest Service, Pacific Southwest Research Station, Davis, CA, USA
+    ^4^USDA Forest Service, Pacific Southwest Research Station, Mammoth Lakes, CA, USA
   correspondence: |
     michael.koontz@colorado.edu
   date_generated: !r format(Sys.Date(), "%B %d, %Y")
@@ -23,6 +23,9 @@ header-includes:
   - \usepackage{setspace}
   - \doublespacing
   - \DeclareUnicodeCharacter{200E}{}
+  - \usepackage{caption}
+  - \captionsetup[figure]{labelformat=empty}
+  - \captionsetup[table]{labelformat=empty}
 output: pdf_document
 ---
 
@@ -43,13 +46,36 @@ Date report generated: `r params$date_generated`
 ```{r libraries}
 library(sf)
 library(tidyverse)
-library(stargazer)
 library(here)
+library(captioner)
 ```
 
-```{r build_model}
-source(here::here("analyses/selection-by-suppression.R"))
+```{r captions}
+fig_nums <- captioner(prefix = "Figure")
+table_nums <- captioner(prefix = "Table")
+eq_nums <- captioner(prefix = "Equation")
+```
+
+```{r short_data}
+short_data <- read_csv(here::here("data/data_output/short-fpafod-sierra-ypmc-nonspatial.csv"))
+
+short_data_0.5pct_ypmc <- 
+  short_data %>% 
+  dplyr::filter(prop_ypmc > 0.5)
+```
+
+
+```{r source_files}
+# source(here::here("analyses/selection-by-suppression.R"))
 # Model object is `fm1`
+
+source(here::here("analyses/short-fpafod-sierra-ypmc-summary.R"))
+# fire_size_ecdf(x) is a function that calculates probability of a fire event being smaller than x
+# fire_size_ecdf <- ecdf(sn_ypmc_fod$fire_size)
+# fire_size_ecdf(0.222) # 0.6143517
+
+# total_ypmc_area_burned is the total area of each fire times the approximate proportion burning in YPMC and then summed
+
 ```
 
 ## Executive summary (to become abstract)
@@ -72,13 +98,19 @@ Thus "large" modern fires in this system are often considered "bad" fires with r
 
 ## Introduction
 
-Fire suppression is an oft-cited root cause of the modern trend of larger, more severe wildfires in the yellow pine/mixed-conifer forests of California's Sierra Nevada mountain range [@calkin2015; @miller2007; @safford2017]. While most of this system would experience frequent, low- to moderate-severity wildfire every 8 to 15 years in the several centuries prior to Euroamerican settlement, suppression management has largely eliminated fire effects from much of western dry forested land in the past 100 years [@steel2015; @safford2017; @miller2017]. A lack of frequent fire has led to densification of Sierra yellow pine/mixed-conifer, which increases fuel loading and homogenizes forest structure [@stephens2018; @collins2016]. Fortuitous alignment of these extreme fuel conditions with earlier snowmelt, longer fire seasons, and hotter droughts (aka "climate change droughts") [@westerling2006; @westerling2016; @abatzoglou2013a; @abatzoglou2016] increases the probability that fires will generate self-propagating behavior [@coen2018] and kill all (or nearly all) overstory vegetation [@koontz2019a] in large, contiguous patches of mortality [@stevens2017]. The Sierra yellow pine/mixed-conifer community is ill-adapted to regenerate in the centers of these large patches, which are far from seed sources [@welch2016], and thus the modern trend of atypically large, contiguous, stand-replacing fires in this system compromise forest health and increase the potential for long-term shifts in vegetation type to shrub- or grasslands [@millar2015; @stevens2017; @steel2018]. 
+Fire suppression is an oft-cited root cause of the modern trend of larger, more severe wildfires in the yellow pine/mixed-conifer forests of California's Sierra Nevada mountain range [@calkin2015; @miller2007; @safford2017]. While most of this system would experience frequent, low- to moderate-severity wildfire every 8 to 15 years in the several centuries prior to Euroamerican settlement, suppression management has largely eliminated fire effects from much of western dry forested land in the past 100 years [@steel2015; @safford2017; @miller2017]. A lack of frequent fire has led to densification of Sierra yellow pine/mixed-conifer, which increases fuel loading and homogenizes forest structure [@stephens2018; @collins2016]. Synergistic alignment of these extreme fuel conditions with earlier snowmelt, longer fire seasons, and hotter droughts (aka "climate change droughts") [@westerling2006; @westerling2016; @abatzoglou2013a; @abatzoglou2016] increases the probability that fires will generate self-propagating behavior [@coen2018] and kill all (or nearly all) overstory vegetation [@koontz2019a] in large, contiguous patches of mortality [@stevens2017]. The Sierra yellow pine/mixed-conifer community is ill-adapted to regenerate in the centers of these large patches, which are far from seed sources [@welch2016], and thus the modern trend of atypically large, contiguous, stand-replacing fires in this system compromise forest health and increase the potential for long-term shifts in vegetation type to shrub- or grasslands [@millar2015; @stevens2017; @steel2018]. 
+
+Wildfire effects to forests are outcomes of a complex social-ecological system dynamic [@calkin2015]. Proximate causes of fire effects to vegetation arise from fire intensity and fire behavior [@keeley2009], which are coupled to fuel, weather, and topography [@mckenzie2008]
+
+Fuels are of particular interest because they can be modified [@agee2005]
+
+Coarse-scale influence of management on fire effects [@meyer2015; @harris2015; @lydersen2017; @stevens2017; @steel2018]
 
 Despite the long-term effects of fire suppression on wildfire trends, fire suppression generally is very effective at its immediate goal of extinguishing fires. Between 1970 and 2002, over 97% of fires burning on U.S. Forest Service land were contained during "initial attack" suppression before they reached 120 hectares in size [@calkin2005; @calkin2015]. 
 
 In the western U.S., including the Sierra yellow pine/mixed-conifer system, the vast majority of fires are managed for suppression, though a small number of natural ignitions are allowed to burn under moderate conditions in "resource benefit", "resource objective", or "wildland fire use" fires in recognition of the important role that fire plays in many healthy forest systems [@davis1979; @meyer2015; @calkin2015].
 
-The fires that remained small are often assumed to have burned under mild or moderate vegetation and climate conditions, facilitating initial suppression efforts. The fires that escape initial attack and grow large account for 97.5% of the total burned area of fires managed by the U.S. Forest Service [@calkin2005], and are often assumed to have grown to these sizes because they were burning under more extreme conditions. 
+The fires that remained small are often assumed to have burned under mild or moderate vegetation and climate conditions, facilitating initial suppression efforts. The fires that escape initial attack and grow large account for 97.5% of the total burned area of fires managed by the U.S. Forest Service [@calkin2005], and are often assumed to have grown to these sizes because they were burning under more extreme conditions [@calkin2014].
 
 "Essentially, through our management efforts we have changed the distribution of fire behavior to only the most extreme." [@calkin2015].
 
@@ -90,71 +122,71 @@ Many studies have suggested that adding more fire to the landscape is a way to r
 
 We use a new dataset of fire severity [@koontz2019] to measure this "selection by suppression" effect and ask:
 
-1) How do burning conditions (regional climate, vegetation density, vegetation continuity) vary between suppression and wildfire use fires?
+1) What is the strength of "selection" on wildfire burning conditions (regional climate, vegetation density, vegetation continuity) imposed by initial attack suppression efforts?
 
 2) What are the consequences of these varying conditions for wildfire effects (burn duration, fire event size, severity configurations)?
 
 3) To what extent might prematurely extinguished suppression wildfires exhibit desireable fire effects, were they to be allowed to burn for longer? That is, are small suppression fires behaving like small wildfire use fires (and thus they should perhaps be left to burn and cover more area)?
 
-## Methods
-
-and 98.5% remain smaller than 80 hectares [@short2017]. 
+## MethodsK
 
 ### Study system
 
-The Sierra Nevada yellow pine/mixed-conifer (hereafter Sierra YPMC) is a disturbance-prone forest system in the Sierra Nevada mountain range of California, U.S.A. It spans the full 628 kilometer latitudinal length of the Sierra Nevada, and over 2,750 meters of elevation (229 meters to 3053 meters; 95% interval = (679, 2516) meters; IQR = (1273, 1945) meters), primarily on the western slope of the mountain range. The forest is dominated by ponderosa pine (*Pinus ponderosa*), sugar pine (*Pinus lambertiana*), white fir (*Abies concolor*), and incense cedar (*Calocedrus decurrens*) in varying mixes. Prior to Euroamerican settlement, the ecosystem experienced frequent, low- to moderate-severity wildfire every 8 to 15 years on average [@steel2015; @safford2017], which consumed surface fuels but generally had minimal effects on large, established trees. This fire regime generated heterogeneous horizontal forest structure, with groups of relatively even-aged trees having interlocking crowns, individual trees with distinct crowns, and variably-sized gaps between these tree clump and individual tree structural features [@lydersen2013]. A century of fire suppression has led to infill of these gaps, homogenizing the horizontal forest structure [@collins2016] and compromising forest resilience [@north2012] in an era of climate change-induced hotter droughts [@millar2015].
+The Sierra Nevada yellow pine/mixed-conifer (hereafter Sierra YPMC) is a disturbance-prone forest system in the Sierra Nevada mountain range of California, U.S.A. It spans the full 628 kilometer latitudinal length of the Sierra Nevada, and 2,500 meters of elevation (300 meters to 2800 meters), primarily on the western slope of the mountain range [@safford2017]. The forest is dominated by ponderosa pine (*Pinus ponderosa*), sugar pine (*Pinus lambertiana*), white fir (*Abies concolor*), and incense cedar (*Calocedrus decurrens*) in varying mixes. Prior to Euroamerican settlement, the ecosystem experienced frequent, low- to moderate-severity wildfire every 8 to 15 years on average [@steel2015; @safford2017], which consumed surface fuels but generally had minimal effects on large, established trees. This fire regime generated heterogeneous horizontal forest structure, with groups of relatively even-aged trees having interlocking crowns, individual trees with distinct crowns, and variably-sized gaps between these tree clump and individual tree structural features [@lydersen2013]. A century of fire suppression has led to infill of these gaps, homogenizing the horizontal forest structure and compromising forest resilience in an era of climate change-induced hotter droughts [@north2009; @millar2015; @collins2016].
 
-We compiled the Sierra YPMC type using the U.S. Forest Service Fire Return Interval Departure (FRID) dataset and included "dry mixed-conifier", "moist mixed-conifer", and "yellow pine" vegetation types following @steel2018 and @koontz2019a. These classifications represent "potential vegetation" given the climate of the area, such that there is no influence of recent disturbance events [@harvey2016b; @steel2018; @koontz2019a].
+For our study, we compiled the Sierra YPMC type using the U.S. Forest Service Fire Return Interval Departure (FRID) dataset and included "dry mixed-conifier", "moist mixed-conifer", and "yellow pine" vegetation types following @steel2018 and @koontz2019a. These classifications represent "potential vegetation" given the climate of the area, such that there is no influence of recent disturbance events [@harvey2016b; @steel2018; @koontz2019a].
 
-### Measuring wildfire burning conditions
+### Context of Sierra YPMC wildfire
 
-The CalFire Fire Resource and Protection Program (FRAP; http://frap.fire.ca.gov/) maintains the most comprehensive datset of wildfire perimeters in the state of California, including attribute data for each fire such as its discovery date, its containment date, and the management objective. The management objective represents the approach taken by the management unit overseeing the wildfire-- either "suppression", with a goal of extinguishing the fire, or "wildland fire use", with a goal of allowing the fire to burn so long as it didn't threaten lives or property. This dataset contains all fires >4 hectares, and thus has greater representation of fire events compared to other wildfire events datasets, though it lacks severity information. For instance, the Monitoring Trends in Burn Severity (MTBS) database only contains wildires in the western U.S. that are larger than 400 hectares [@eidenshink2007] and the U.S. Forest Service Region 5 geospatial database contains wildfires in the Sierra Nevada that are larger than 80 hectares [@steel2018], though both of these datasets contain information on wildfire severity. 
+To describe the modern context of wildfire activity in the Sierra Nevada yellow pine/mixed-conifer system, we used geospatial records contained in @short2017 (U.S. Forest Service Fire Program Analysis Fire Occurrence Database; FPAFOD), the most comprehensive database of wildfire occurance for the United States representing 1.88 million wildfire records from 1992 to 2015.
 
-@koontz2019 used the expanded FRAP dataset of over 1,000 wildfire perimeters to calculate wildfire severity and calibrate satellite-derived measures using ground-based overstory composite burn index (CBI) [@koontz2019a], which is an integrated measure of the effect of a wildfire on the forest overstory one year after the burn [@key2006]. CBI correlates well with direct measures of fire impact to vegetation in Sierra YPMC, such as percent of overstory mortality [@miller2007].
+The FPAFOD contains point locations for the centroids of each fire's footprint, rather than the perimeter of each fire as in some other databases [@eidenshink2007]. We spatially subsetted the FOD data to fire events whose centroids occurred within the Sierra Nevada mountain range, as defined by the Jepson geographic subdivisions (north, central, and south Sierra Nevada Foothills and High Sierra Nevada, as well as the Tehachapi Mountain Area) [@jepsonfloraproject2016]. For each fire record, we approximated its footprint by creating a circular buffer around the centroid with an area equivalent to the reported area of the fire. Using this footprint approximation, we calculated the proportion of area that intersected with the our compilation of Sierra YPMC from the FRID dataset. We retained all fires with greater than zero area of the approximate footprint covering the Sierra YPMC extent. We calculated burn duration as the number of days between the containment date and the alarm date, and retained all fires with a burn duration of greater than 0 and less than 364 days to eliminate likely errors in reporting of alarm and containment dates.
 
-In addition to mapping wildfire severity across each fire in the FRAP perimeter database, @koontz2019a also calculated fuel and regional climate variables within the burn perimeter. The prefire Normalized Difference Vegetation Index (NDVI; @rouse1973]) was found to correlate strongly with wildfire severity, as was the standard deviation of NDVI within the 90m x 90m window surrounding each pixel, which represents a measure of horizontal forest structure and fuel continuity [@koontz2019a]. The gridMET product [@abatzoglou2013] was used to calculate the median 100-hour fuel moisture, energy release component, and vapor pressure deficit for the 3 days prior to each fire's discovery date, which captures  regional climate conditions over time periods of several days, but not very local weather events that might occur over the span of hours. Each of these variables has a strong impact on wildfire behavior at macroscales [@abatzoglou2013a].
+At the centroid of each fire, we used the gridMET product [@abatzoglou2013] to calculate the median windspeed for the first three days of the fire. We also calculated the energy release component, a modeled estimate of expected fire behavior in conifer forest, for the three days prior to the fire's discovery date. The gridMET product has a daily temporal resolution and a 4 kilometer spatial resolution, so our climate variables capture regional conditions over time periods of several days, but not very local weather events that might occur over the span of hours. Each of these variables has a strong impact on wildfire behavior at macroscales [@abatzoglou2013a].
 
-### Aggregating burning conditions to the fire event level
+### Measuring wildfire severity
 
-For this study, we assigned prefire burning conditions for each fire as the mean fuel (prefire NDVI, prefire standard deviation of NDVI within 90m x 90m moving windows) and regional climate (100-hour fuel moisture, energy release component, vapor pressure deficit) values within each fire perimeter.
+The CalFire Fire Resource and Protection Program (FRAP; http://frap.fire.ca.gov/) maintains the most comprehensive datset of wildfire perimeters in the state of California, including attribute data for each fire such as its discovery date, its containment date, and the management objective. The management objective represents the approach taken by the management unit overseeing the wildfire-- either "suppression", with a goal of extinguishing the fire, or "wildland fire use", with a goal of allowing the fire to burn to benefit forest resources so long as it didn't threaten lives or property [@meyer2015]. This dichotomy is somewhat simplistic, as each wildfire can be managed for multiple objectives, but it is a generally useful framework for understanding the primary management goal [@meyer2015]. This dataset contains all fires >4 hectares, and thus has greater representation of fire events compared to other wildfire events datasets, though it lacks severity information. For instance, the Monitoring Trends in Burn Severity (MTBS) database only contains wildires in the western U.S. that are larger than 400 hectares [@eidenshink2007] and the U.S. Forest Service Region 5 geospatial database contains wildfires in the Sierra Nevada that are larger than 80 hectares [@steel2018], though both of these datasets contain information on wildfire severity. 
+
+@koontz2019 used the expanded FRAP dataset of over 1,000 wildfire perimeters to calculate wildfire severity and calibrate satellite-derived measures using ground-based overstory composite burn index (CBI) [@koontz2019a], which is an integrated measure of the effect of a wildfire on the forest overstory one year after the burn [@key2006]. CBI correlates well with direct measures of fire impact to vegetation in Sierra YPMC, such as percent of overstory mortality [@miller2007]. Thresholds of wildfire severity (unchanged, low, moderate, and high) calibrated to the full dataset [@koontz2019a] were imposed on each fire and then contiguous pixels of each category were vectorized into polygons to form patches of each severity category.
+
+### Burning conditions per fire event
+
+In addition to mapping wildfire severity across each fire in the FRAP perimeter database, @koontz2019a also calculated fuel and regional climate variables within the burn perimeter. The prefire Normalized Difference Vegetation Index (NDVI; @rouse1973]) was found to correlate strongly with local wildfire severity, as was the standard deviation of NDVI within the 90m x 90m window surrounding each pixel, which represents a measure of horizontal forest structure and fuel continuity [@koontz2019a]. The gridMET product [@abatzoglou2013] was used to calculate the energy release component for the 3 days prior to each fire's discovery date as well as the wind speed for the first three days of the fire. For this study, we assigned prefire burning conditions for each fire as the mean fuel (prefire NDVI, prefire standard deviation of NDVI within 90m x 90m moving windows) and regional climate (energy release component for 3 days prior to the fire, wind speed for first 3 days of the fire) values within each fire perimeter.
+
+For each fire, we calculated the total number of fires burning on that fire's alarm date, the proportion of area represented by each severity category, as well as the maximum patch size of each severity category. Finally, we calculated the stand replacing decay coefficient (SDC) [@stevens2017; @collins2017], a single metric that integrates high severity patch size and shape such that a lower SDC corresponds to a larger, more circular high severity patches with effectively more area within those patches far from the patch edges.
 
 ### Designating "survivorship" of suppression fires
 
-For each wildfire with a suppression management objective, we determined whether it "survived" initial attack by whether it's burn duration (discovery date subtracted from the containment date) was greater than 1 day. Following @abatzoglou2018a, we assumed that fires under a suppression management objective that burned for more than one day would require different firefighting tactics than direct attack and thus represented a reconfiguration of firefighting personnel and resource allocation.
+For each wildfire in the @koontz2019a dataset with a suppression management objective, we determined whether it "survived" initial attack by whether its burn duration (discovery date subtracted from the containment date) was greater than 1 day. Following @abatzoglou2018a, we assumed that fires under a suppression management objective that burned for more than one day would require different firefighting tactics than direct attack and thus represented a reconfiguration of firefighting personnel and resource allocation.
 
 ### Quantifying the selection effect of fire suppression
 
-We treated the prefire fuel (prefire NDVI, heterogeneity of NDVI) and climate conditions (prefire energy release component) as wildfire "phenotypes" with some distribution, and measured the extent to which wildfire suppression "selected" for particular phenotypes using the survivorship of each fire to initial attack as our fitness metric. Given the binomial response of the data, we used a logistic regression framework in an evolutionary ecology framework [@lande1983; @janzen1998].
+We treated the prefire fuel (prefire NDVI, heterogeneity of NDVI) and climate conditions (prefire energy release component, early fire wind speed) as wildfire "phenotypes" having some distribution, and used logistic regression to measure the extent to which wildfire suppression "selected" for particular burning condition phenotypes using the survivorship of each fire to initial attack as a binary response fitness metric in an evolutionary ecology framework [@lande1983; @janzen1998].
 
-### Implications of selection for wildfire responses
+### Case study of many simultaneously burning fires
 
-We fit models using the same prefire fuel and climate conditions to wildfire effects responses including fire event size, proportion high severity, and the stand-replacing decay coefficient [@collins2017; @stevens2017].
-
-Comparing to the "wildland fire use" fires in some way?
-
-### Future work?
-
-Took the @short2017 dataset and subsetted to (approximately) Sierra YPMC. (took centroid and fire area, assumed circular fire, assessed how much of it fell across the Sierra YPMC raster image; super small fires that intersected no centroids of the raster image were converted back to points and we "extracted" the Sierra YPMC raster value (either 0 or 1) based on the point location instead). Uploaded to Earth Engine and got the regional climate values for the centroids. (Also got the fuel values for the centroids, but these aren't that meaningful because they should vary quite a bit across the fires. Could still calculate across the assumed circular fires?)
-
-Some summary stats of the Sierra Nevada yellow pine/mixed-conifer subset of the @short2017 fire occurrence dataset. (65% of fires less than a Landsat pixel; 5.2% of fires in @koontz2019 dataset; 1.5% in USFS Region 5 dataset; 0.5% in MTBS dataset)
-
-Subset @short2017 into suppression/managed wildfire based on where it burns, using method of @steel2018.
-
-Use the expanded set of fires, and the relationships between fire size/SDC and covariates to extrapolate the potential added "good fire area" that might have burned if the @short2017 suppression fires weren't extinguished.
+We subsetted the @koontz2019a dataset to all fires with greater than or equal to 20 other fires burning on its alarm date. Many of these fires were ignited during the June 21-22, 2008 storms in the Sierra Nevada.
 
 ## Results
 
+### Context of Sierra YPMC
+
+We found `r nrow(short_data)` fire events burning at least partially in Sierra Nevada yellow pine/mixed-conifer, and `r nrow(short_data_0.5pct_ypmc)` fires burning in majority Sierra yellow pine/mixed-conifer in the FPAFOD database [@short2017]. 
+
+Some summary stats of the Sierra Nevada yellow pine/mixed-conifer subset of the @short2017 fire occurrence dataset. (`r round(fire_size_ecdf(0.222), 2)`% of fires are smaller than 0.09 hectares-- the size of a single pixel from Landsat which is a USGS satellite product often used to measure fire effects by comparing imagery just before the fire to imagery one year after the fire [@miller2007]. The MTBS dataset [@eidenshink2007], with a lower fire size threshold of 400 hectares, accounts for `r 1 - round(fire_size_ecdf(1000), 2)`% of fires; the USFS Region 5 geospatial dataset, with a lower fire size threshold of 80 hectares, accounts for `r 1 - round(fire_size_ecdf(200), 2)`% of fires; the @koontz2019 dataset, which is derived from FRAP and has a lower fire size threshold of 4 hectares, accounts for `r 1 - round(fire_size_ecdf(10), 2)`% of fires.
+
 ### Selection by suppression
 
-We found a sizeable effect of phenotypic selection of initial attack suppression on the heterogeneity of NDVI and the prefire energy release component. Wildfires that survived initial attack were more likely to be burning in more extreme, homogenous fuels (lower heterogeneity of NDVI) and more extreme, hotter/drier climate conditions (higher energy release component) compared to wildfires that succumbed to the initial attack. 
+We found a sizeable effect of phenotypic selection of initial attack suppression on the heterogeneity of NDVI, prefire energy release component, and number of fires burning concurrent with each fire's discovery date. Wildfires that survived initial attack were more likely to be burning in more extreme, homogenous fuels (lower heterogeneity of NDVI), more extreme, hotter/drier climate conditions (higher energy release component), and with more fires burning concurrently compared to wildfires that succumbed to the initial attack. 
 
-```{r selection_by_suppression_model, include = TRUE, results = 'asis'}
-stargazer(fm1, header = FALSE)
+```{r selection_by_suppression_model}
+fig_nums(name = "fig-model-effects-halfeye", caption = "Halfeye plot showing posterior distributions of coefficient estimates for model predicting the probability of wildfire survivorship in the first 48 hours of initial attack. The effect sizes are proportional to the 'strength of selection' of initial attack on the burning conditions of wildfire. Credible intervals are shown below each probability density function with the point representing the mean, the dark line representing the 66% credible interval, and the light line representing the 95% credible interval.")
 ```
 
-### Implications of selection by suppression
+![`r fig_nums(name = "fig-model-effects-halfeye")`](../../figures/selection-by-suppression-halfeye.png)
 
-Comparison to wildland fire use fires by treating these fires as the "wild type" in the evolutionary ecology framing.
+### Implications of selection by suppression
 
 
 ![Distribution of log fire event size by management objective. While wildfire use fires exhibit a lognormal distribution in size, suppression fires exhibit clear multimodality.](../../figures/fire-size-histogram-by-management-objective.pdf)
@@ -178,6 +210,15 @@ Two implications:
 2) Though destructive megaevents are on the rise, their prevalence is highlighted because they are all that burns large. 
 
 Essentially all of the suppression fires in Figure 2c that are within or above the confidence interval for the wildfire use fires had beneficial severity characteristics but were suppressed. Each of these fires represents potentially "lost area" of beneficial fire activity.
+
+
+### Effect of a typical fire versus the typical effect of a fire
+
+Most fires are small, and some are small because they undergo active suppression. We have demonstrated that there is a bias toward extreme burning conditions imposed by suppression that increases with minimum fire size being analyzed. Thus, databases of fire effects that include large fires (e.g., MTBS) have this bias baked in for the Sierra yellow pine/mixed-conifer system.
+
+@cansler2014 did a good job of including small fires when measuring fire effects.
+
+
 
 ### Extending the metaphor: a case for an evolutionary response to selection
 
