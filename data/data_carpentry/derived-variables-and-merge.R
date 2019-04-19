@@ -11,8 +11,9 @@ library(tidyverse)
 library(sf)
 
 # Read metadata file
-md <- read_csv("data/data_raw/wildfire-severity_sierra-nevada-ca-usa_ypmc_1984-2017_fire-metadata.csv")
-# md_sf <- st_read("data/data_raw/wildfire-severity_sierra-nevada-ca-usa_ypmc_1984-2017_fire-metadata.geoJSON") %>% st_transform(3310)
+# md <- read_csv("data/data_raw/wildfire-severity_sierra-nevada-ca-usa_ypmc_1984-2017_fire-metadata.csv")
+md <- st_read("data/data_raw/wildfire-severity_sierra-nevada-ca-usa_ypmc_1984-2017_fire-metadata.geoJSON") %>% st_transform(3310)
+
 sdc <- 
   read_csv("data/data_output/high-severity-fires-with-sdc.csv") %>% 
   dplyr::select(fire_id, sdc)
@@ -20,11 +21,14 @@ sdc <-
 fires_by_fire <- read_csv("data/data_output/polygonized-fires-by-fire.csv")
 fires_by_severity <- read.csv("data/data_output/polygonized-fires-by-severity-classes.csv")
 
-# short_fires <- st_read("data/data_output/sierra-nevada-ypmc-short-fod.gpkg") %>% dplyr::rename(fod_id = FOD_ID)
-# ee_short_fires <- 
-#   st_read("data/data_output/ee_short-burning-conditions_48-day-window_L4578_bicubic.geojson") %>% 
-#   st_drop_geometry() %>% 
-#   dplyr::select(fod_id, alarm_date, cont_date, fire_size, prop_ypmc, elev, earlyFfm100, fm100, hdw, vs, vpd, RBR, preFire_ndvi, het_ndvi_1, focal_mean_ndvi_1)
+short_fires <- st_read("data/data_output/sierra-nevada-ypmc-short-fod.gpkg") %>% dplyr::rename(fod_id = FOD_ID)
+
+ee_short_fires <-
+  st_read("data/data_output/ee_short-burning-conditions_48-day-window_L4578_bicubic.geojson") %>%
+  st_drop_geometry() %>%
+  dplyr::select(fod_id, alarm_date, cont_date, fire_size, prop_ypmc, elev, earlyFfm100, fm100, hdw, vs, vpd, RBR, preFire_ndvi, het_ndvi_1, focal_mean_ndvi_1)
+
+write_csv(ee_short_fires, path = "data/data_output/short-fpafod-sierra-ypmc-nonspatial.csv")
 
 # Make the different severity level information a per-fire variable
 sev_cat_prop <-
@@ -36,6 +40,16 @@ sev_cat_prop <-
                 prop_mod = `2`,
                 prop_high = `3`)
 
+# Make the different severity level information a per-fire variable
+sev_cat_max_patch <-
+  fires_by_severity %>% 
+  dplyr::select(fire_id, sev_cat, max_patch_area_m2) %>% 
+  tidyr::spread(key = sev_cat, value = max_patch_area_m2, fill = 0) %>% 
+  dplyr::rename(max_patch_m2_unchanged = `0`,
+                max_patch_m2_low = `1`,
+                max_patch_m2_mod = `2`,
+                max_patch_m2_high = `3`)
+
 # Add a burn duration to the per-fire metadata information using the containment date 
 fires <-
   md %>% 
@@ -44,6 +58,7 @@ fires <-
   dplyr::mutate(burn_duration = as.numeric(cont_date - alarm_date)) %>% 
   left_join(fires_by_fire, by = "fire_id") %>% 
   dplyr::left_join(sev_cat_prop, by = "fire_id") %>% 
+  dplyr::left_join(sev_cat_max_patch, by = "fire_id") %>% 
   dplyr::filter(!is.na(objective)) %>% 
   dplyr::mutate(objective = ifelse(objective == 1, yes = "suppression", no = "wfu"))
 
@@ -94,12 +109,17 @@ fires_compare <-
   fires_sdc %>% 
   dplyr::filter(!is.na(burn_duration) & (burn_duration >= 0 & burn_duration < 365)) %>% 
   dplyr::mutate(june2008fire = ifelse(fire_id %in% june2008fires_id, yes = "yes", no = "no")) %>% 
-  dplyr::left_join(ia %>% dplyr::select(fire_id, survived_ia)) %>% 
+  dplyr::left_join(ia %>% st_drop_geometry() %>% dplyr::select(fire_id, survived_ia)) %>% 
   dplyr::mutate(comparison_cat = case_when(june2008fire == "yes" ~ "june2008fire",
                                            objective == "wfu" ~ "wfu",
+                                           objective == "suppression" & cause == 18 ~ "escaped_rx",
                                            objective == "suppression" & survived_ia == 1 ~ "survived_ia",
                                            objective == "suppression" & survived_ia == 0 ~ "died_ia"
-  ))
+  )) %>% 
+  dplyr::mutate(dowy = ifelse(test = alarm_date < ymd(paste(alarm_year, "10", "01", sep = "-")), 
+                              yes = 1 + alarm_date - ymd(paste(alarm_year - 1, "10", "01", sep = "-")),
+                              no = 1 + alarm_date - ymd(paste(alarm_year, "10", "01", sep = "-"))))
+
 
 # Determine number of concurrently burning fires on the discovery day of each fire
 
@@ -110,4 +130,11 @@ for (i in seq_along(1:nrow(fires_compare))) {
     fires_compare$simultaneous_fires[i] <- length(which((fires_compare$cont_date >= alarm_date) & (fires_compare$alarm_date <= alarm_date)))
 }
 
-write_csv(fires_compare, path = "data/data_output/merged-data-and-derived-variables.csv")
+ee_fires_compare <-
+  fires_compare %>% 
+  st_transform(4326) %>% 
+  dplyr::select(fire_id, fire_name, cause, objective, area_ha, alarm_date, cont_date, simultaneous_fires) %>% 
+  dplyr::rename(n_concur = simultaneous_fires)
+
+write_csv(st_drop_geometry(fires_compare), path = "data/data_output/merged-data-and-derived-variables.csv")
+st_write(ee_fires_compare, dsn = "data/data_output/frap-perims-extra/frap-perims-extra.shp", delete_dsn = TRUE)
