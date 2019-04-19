@@ -3,9 +3,12 @@
 library(tidyverse)
 library(lubridate)
 library(cowplot)
+library(tmap)
 library(here)
 
 epoch <- ymd("1970-01-01")
+
+sn <- st_read("data/data_output/jepson_sierra-nevada-ecoregion/jepson_sierra-nevada-ecoregion.shp")
 
 sn_ypmc_fod <- 
   read_csv(here::here("data/data_output/short-fpafod-sierra-ypmc-nonspatial.csv"))
@@ -42,3 +45,22 @@ short_burn_duration_incl_inset <-
 
 ggsave(plot = short_fire_size, filename = "figures/short_fire_size_histogram.png")
 ggsave(plot = short_burn_duration_incl_inset, filename = "figures/short_burn_duration_histogram_inset.png")
+
+short_spatial <- st_read("data/data_output/ee_short-burning-conditions_48-day-window_L4578_bicubic.geojson")
+
+june2008 <-
+  short_spatial %>% 
+  dplyr::filter(alarm_year == 2008,
+                alarm_month == 06,
+                alarm_day %in% c(21, 22))
+
+june2008 %>% 
+  summarize(erc = mean(erc))
+
+
+tm_shape(sn) +
+  tm_polygons() +
+  tm_shape(june2008) +
+  tm_dots()
+
+ggplot(june2008, aes(fire_size)) + geom_histogram()
