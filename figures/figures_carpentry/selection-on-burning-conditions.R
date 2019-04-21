@@ -16,6 +16,7 @@ selection_on_concurrent_fires <-
   geom_density(alpha = 0.5) +
   # geom_histogram(alpha = 0.5, bins = 100) +
   labs(x = "Number of fires concurrently burning\n(higher is more extreme)",
+       y = "Pr(X)",
        fill = "Survived\ninitial attack") +
   theme_bw()
 
@@ -24,6 +25,7 @@ selection_on_prefire_ndvi <-
   geom_density(alpha = 0.5) +
   # geom_histogram(alpha = 0.5, bins = 100) +
   labs(x = "Prefire NDVI\n(higher is more extreme)",
+       y = "Pr(X)",
        fill = "Survived\ninitial attack") +
   theme_bw()
 
@@ -32,6 +34,7 @@ selection_on_fuel_heterogeneity <-
   geom_density(alpha = 0.5) +
   # geom_histogram(alpha = 0.5, bins = 100) +
   labs(x = "Prefire NDVI heterogeneity\n(lower is more extreme)",
+       y = "Pr(X)",
        fill = "Survived\ninitial attack") +
   theme_bw()
 
@@ -40,6 +43,7 @@ selection_on_erc <-
   geom_density(alpha = 0.5) +
   # geom_histogram(alpha = 0.5, bins = 100) +
   labs(x = "Prefire Energy Release Component (ERC)\n(higher is more extreme)",
+       y = "Pr(X)",
        fill = "Survived\ninitial attack") +
   theme_bw()
 
@@ -75,3 +79,29 @@ panel_grid_color <- plot_grid(selection_on_erc + theme(legend.position = "none")
 selection_panel_plot_color <- plot_grid(panel_grid_color, shared_legend, rel_widths = c(1, 0.2))
 
 ggsave(plot = selection_panel_plot_color, filename = "figures/selection-on-burning-conditions.png")
+
+
+
+# color figure; simpler model ---------------------------------------------
+
+# No effect of simultaneous fires
+selection_on_vs <-
+  ggplot(ia %>% dplyr::mutate(survived_ia = ifelse(survived_ia == 1, yes = "yes", no = "no")), aes(x = earlyfire_vs, fill = survived_ia)) +
+  geom_density(alpha = 0.5) +
+  # geom_histogram(alpha = 0.5, bins = 100) +
+  labs(x = "Early fire wind speed\n(higher is more extreme)",
+       y = "Pr(X)",
+       fill = "Survived\ninitial attack") +
+  theme_bw()
+
+panel_grid_color <- plot_grid(selection_on_erc + theme(legend.position = "none"),
+                              selection_on_fuel_heterogeneity + theme(legend.position = "none"),
+                              selection_on_vs + theme(legend.position = "none"),
+                              selection_on_prefire_ndvi + theme(legend.position = "none"),
+                              nrow = 2, ncol = 2,
+                              labels = LETTERS[1:4])
+
+selection_panel_plot_color <- plot_grid(panel_grid_color, shared_legend, rel_widths = c(1, 0.2))
+
+ggsave(plot = selection_panel_plot_color, filename = "figures/selection-on-burning-conditions.png")
+
