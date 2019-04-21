@@ -29,6 +29,18 @@ fm1 <- glm(survived_ia ~ scale(prefire_ndvi) +
 
 summary(fm1)
 
+fm1_brms <- brm(survived_ia ~ scale(prefire_ndvi) + 
+                   scale(nbhd_sd_ndvi_1) +
+                   scale(prefire_erc) +
+                   scale(earlyfire_vs), 
+                 data = ia, 
+                 family = bernoulli())
+
+fm1_brms
+pp_check(fm1_brms)
+write_rds(fm1_brms, path = "analyses/analyses_output/selection-by-suppression-model-fit-simple.rds")
+
+
 fm1b <- glm(survived_ia ~ scale(prefire_ndvi) + 
              scale(nbhd_sd_ndvi_1) +
              scale(prefire_erc) +
