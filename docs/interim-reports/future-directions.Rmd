@@ -7,6 +7,10 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Significance 
+
+We've identified a clear selection bias in the distribution of fire burning conditions, and thus fire effects, arising from initial suppression efforts. We measured this effect using a formal means of measuring selection, borrowed from the evolutionary ecology framework of phenotypic selection.
+
 ## Future directions
 
 2) What are the consequences of these varying conditions for wildfire effects (burn duration, fire event size, severity configurations)?
