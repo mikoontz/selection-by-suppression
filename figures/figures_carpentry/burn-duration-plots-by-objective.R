@@ -23,7 +23,7 @@ ggsave(plot = duration_distribution, filename = "figures/burn-duration-density-p
 
 event_size_v_duration <-
   ggplot(fires, aes(x = burn_duration, y = log(fire_area_m2 / 10000, base = 10), lty = objective, color = objective)) +
-  geom_point(alpha = 0.5) +
+  geom_point(alpha = 0.1, cex = 0.9) +
   geom_smooth() +
   theme_bw() +
   labs(x = "Burn duration (days)",
@@ -35,7 +35,7 @@ ggsave(plot = event_size_v_duration, filename = "figures/burn-duration-vs-event-
 
 sdc_v_duration <-
   ggplot(fires, aes(x = burn_duration, y = sdc, lty = objective, color = objective)) +
-  geom_point(alpha = 0.5) +
+  geom_point(alpha = 0.1, cex = 0.9) +
   geom_smooth() +
   theme_bw() +
   labs(x = "Burn duration (days)",
@@ -47,7 +47,7 @@ ggsave(plot = sdc_v_duration, filename = "figures/burn-duration-vs-sdc-by-object
 
 prop_high_v_duration <- 
   ggplot(fires, aes(x = burn_duration, y = prop_high, lty = objective, color = objective)) +
-  geom_point(alpha = 0.5) +
+  geom_point(alpha = 0.1, cex = 0.9) +
   geom_smooth() +
   theme_bw() +
   labs(x = "Burn duration (days)",
@@ -73,6 +73,6 @@ pgrid <- plot_grid(duration_distribution_no_legend,
                    ncol = 2,
                    labels = LETTERS[1:4])
 # add legend
-panel_plot <- plot_grid(pgrid, shared_legend, ncol = 2, rel_widths = c(1, .1))
+panel_plot <- plot_grid(pgrid, shared_legend, ncol = 2, rel_widths = c(1, 0.2))
 
 ggsave(plot = panel_plot, filename = "figures/burn-duration-4-panel.png")
