@@ -5,7 +5,11 @@ library(lubridate)
 library(cowplot)
 
 fires <- 
-  read_csv("data/data_output/merged-data-and-derived-variables.csv")
+  read_csv("data/data_output/merged-data-and-derived-variables.csv") %>% 
+  dplyr::mutate(wfu_survived_ia = case_when(objective == "wfu" ~ "wfu",
+                                            objective == "suppression" & survived_ia == 1 ~ "survived IA",
+                                            objective == "suppression" & survived_ia == 0 ~ "extinguished during IA")) %>% 
+  dplyr::filter(prop_ypmc > 0.5)
 
 duration_distribution <-
   ggplot(fires, aes(x = burn_duration, fill = objective)) +
