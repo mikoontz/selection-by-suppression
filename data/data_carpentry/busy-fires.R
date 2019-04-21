@@ -19,7 +19,8 @@ wx_per_fire <-
 
 fires <-
   fires %>% 
-  dplyr::left_join(wx_per_fire, by = "fire_id")
+  dplyr::left_join(wx_per_fire, by = "fire_id") %>% 
+  dplyr::mutate(doy = as.numeric(alarm_date - ymd(paste(alarm_year, "01-01"))))
 
 
 # short <- st_read("data/data_output/ee_short-burning-conditions_48-day-window_L4578_bicubic.geojson")
@@ -51,10 +52,10 @@ fires <-
 # 
 # plot(table(short_mod$burn_duration))
 
-fires <- 
-  fires %>% 
-  dplyr::mutate(comparison_cat = ifelse(comparison_cat != "wfu" & simultaneous_fires > 20, yes = "june2008fire", no = comparison_cat)) %>% 
-  dplyr::mutate(comparison_cat = ifelse(comparison_cat == "june2008fire", yes = "busy_fire", no = comparison_cat))
+# fires <- 
+#   fires %>% 
+#   dplyr::mutate(comparison_cat = ifelse(comparison_cat != "wfu" & simultaneous_fires > 20, yes = "june2008fire", no = comparison_cat)) %>% 
+#   dplyr::mutate(comparison_cat = ifelse(comparison_cat == "june2008fire", yes = "busy_fire", no = comparison_cat))
 
 fires %>% 
   dplyr::filter(prop_ypmc > 0.5) %>% 
@@ -66,21 +67,21 @@ fires %>%
                                          prefire_ndvi = mean(prefire_ndvi, na.rm = TRUE),
                                          nbhd_sd_ndvi_1 = mean(nbhd_sd_ndvi_1, na.rm = TRUE),
                                          prefire_erc = mean(prefire_erc, na.rm = TRUE),
-                                         erc_p10 = mean(erc_p10),
-                                         erc_p50 = mean(erc_p50),
-                                         erc_p90 = mean(erc_p90),
-                                         vpd_p10 = mean(vpd_p10),
-                                         vpd_p50 = mean(vpd_p50),
-                                         vpd_p90 = mean(vpd_p90),
-                                         vs_p10 = mean(vs_p10),
-                                         vs_p50 = mean(vs_p50),
-                                         vs_p90 = mean(vs_p90),
-                                         fm100_p10 = mean(fm100_p10),
-                                         fm100_p50 = mean(fm100_p50),
-                                         fm100_p90 = mean(fm100_p90),
-                                         hdw_p10 = mean(vs_p10 * vpd_p10),
-                                         hdw_p50 = mean(vs_p50 * vpd_p50),
-                                         hdw_p90 = mean(vs_p90 * vpd_p90),
+                                         erc_p10 = median(erc_p10),
+                                         erc_p50 = median(erc_p50),
+                                         erc_p90 = median(erc_p90),
+                                         vpd_p10 = median(vpd_p10),
+                                         vpd_p50 = median(vpd_p50),
+                                         vpd_p90 = median(vpd_p90),
+                                         vs_p10 = median(vs_p10),
+                                         vs_p50 = median(vs_p50),
+                                         vs_p90 = median(vs_p90),
+                                         fm100_p10 = median(fm100_p10),
+                                         fm100_p50 = median(fm100_p50),
+                                         fm100_p90 = median(fm100_p90),
+                                         hdw_p10 = median(vs_p10 * vpd_p10),
+                                         hdw_p50 = median(vs_p50 * vpd_p50),
+                                         hdw_p90 = median(vs_p90 * vpd_p90),
                                          prefire_fm100 = mean(prefire_fm100, na.rm = TRUE),
                                          prefire_vpd = mean(prefire_vpd, na.rm = TRUE),
                                          earlyfire_hdw = mean(earlyfire_hdw, na.rm = TRUE),
@@ -95,15 +96,15 @@ fires %>%
   ) %>% 
   as.data.frame()
 
-busy_fires <-
+june2008 <-
   fires %>% 
-  dplyr::filter(comparison_cat == "busy_fire") %>% 
+  dplyr::filter(comparison_cat == "june2008fire") %>% 
   dplyr::mutate(group = cut(dowy, breaks = c(0, 150, 300, 365)))
 
-ggplot(busy_fires, aes(dowy, y = 1, color = group)) + geom_point()
+ggplot(june2008, aes(dowy, y = 1, color = group)) + geom_point()
 
 
-busy_fires %>% group_by(group) %>% summarize(n = n(),
+june2008 %>% group_by(group) %>% summarize(n = n(),
                                              survived_ia = mean(survived_ia),
                                              elev = mean(elevation, na.rm = TRUE),
                                              dowy = mean(dowy),
@@ -136,7 +137,11 @@ busy_fires %>% group_by(group) %>% summarize(n = n(),
   as.data.frame()
 
 unique(busy_fires$alarm_month)
-june2008 <- fires_sdc %>% dplyr::filter(fire_id %in% june2008fires_id)
+june2008 <- fires %>% dplyr::filter(fire_id %in% june2008fires_id)
+
+
+preds <- predict(fm1, newdata = june2008, type = "response")
+
 
 sort(unique(busy_fires$alarm_date))
 
@@ -153,3 +158,5 @@ fires %>%
   dplyr::filter(prop_ypmc > 0.5) %>% 
   ggplot(aes(dowy)) +
   geom_histogram(bins = 365)
+
+ggplot(fires %>% filter(objective == "suppression"), aes(doy, vpd_p10)) + geom_point() + geom_smooth()
