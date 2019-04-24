@@ -22,3 +22,10 @@ total_area_burned <- sum(sn_ypmc_fod$fire_size)
 
 total_ypmc_area_burned <- sum(sn_ypmc_fod$fire_size * sn_ypmc_fod$prop_ypmc)
 # 1180487 million hectares
+
+short_fpafod_ypmc_list <-
+  list(total_area_burned = total_area_burned,
+       total_ypmc_area_burned = total_ypmc_area_burned,
+       fire_size_ecdf = fire_size_ecdf)
+
+write_rds(short_fpafod_ypmc_list, path = here::here("analyses/analyses_output/short-fpafod-ypmc-list.rds"))
