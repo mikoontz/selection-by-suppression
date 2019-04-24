@@ -2,7 +2,7 @@
 bibliography: ../docs_carpentry/selection-by-suppression.bib
 csl: ../docs_carpentry/frontiers-in-ecology-and-the-environment.csl
 params:
-  title: Initial wildfire suppression efforts select for more extreme fuel and climate burning conditions in a seasonally dry forest
+  title: Initial wildfire suppression efforts select for more extreme fuel and climate burning conditions in Sierra Nevada forests
   author: |
     Michael J. Koontz^1,2,\*^,
     Zachary L. Steel^3^,
@@ -71,10 +71,12 @@ fires_maj_ypmc <-
 
 
 ```{r source_files}
-# source(here::here("analyses/selection-by-suppression.R"))
-# Model object is `fm1`
+short_fpafod_ypmc_list <- read_rds(path = here::here("analyses/analyses_output/short-fpafod-ypmc-list.rds"))
 
-source(here::here("analyses/short-fpafod-sierra-ypmc-summary.R"))
+fire_size_ecdf <- short_fpafod_ypmc_list$fire_size_ecdf
+total_area_burned <- short_fpafod_ypmc_list$total_area_burned
+total_ypmc_area_burned <- short_fpafod_ypmc_list$total_ypmc_area_burned
+
 # fire_size_ecdf(x) is a function that calculates probability of a fire event being smaller than x
 # fire_size_ecdf <- ecdf(sn_ypmc_fod$fire_size)
 # fire_size_ecdf(0.222) # 0.6143517
@@ -184,7 +186,7 @@ pandoc.table(fire_size_comparison,
 fig_nums(name = "fig-fire-size-histogram-by-management-objective", caption = "Distribution of log fire event size by management objective. While wildfire use fires exhibit a lognormal distribution in size, suppression fires exhibit clear multimodality with many fires extinguished when they are very small.")
 ```
 
-![`r fig_nums(name = "fig-fire-size-histogram-by-management-objective")`](../../figures/fire-size-histogram-by-management-objective.png)
+![`r fig_nums(name = "fig-fire-size-histogram-by-management-objective")`](../../figures/fire-size-histogram-by-management-objective.png){ width=6in }
 
 ### Selection by suppression
 
@@ -194,13 +196,13 @@ We found a sizable effect of phenotypic selection of initial attack suppression 
 fig_nums(name = "fig-model-effects-halfeye", caption = "Halfeye plot showing posterior distributions of coefficient estimates for model predicting the probability of wildfire survivorship in the first 48 hours of initial attack. The effect sizes are proportional to the 'strength of selection' of initial attack on the burning conditions of wildfire. Credible intervals are shown below each probability density function with the point representing the mean, the dark line representing the 66% credible interval, and the light line representing the 95% credible interval. The dotted line shows an effect size of zero.")
 ```
 
-![`r fig_nums(name = "fig-model-effects-halfeye")`](../../figures/selection-by-suppression-halfeye-simple.png)
+![`r fig_nums(name = "fig-model-effects-halfeye")`](../../figures/selection-by-suppression-halfeye-simple.png){ width=6in }
 
 ```{r}
-fig_nums(name = "selection-by-suppression-phenotype-distributions", caption = "The selection effect on the vegetation and climate burning conditions of suppressed wildfires. A) Early suppression efforts selected for greater energy release components, an estimate of fireline intensity correlated to hot, dry conditions. B) Fires surviving initial suppression efforts burn in more homogenous fuels, as measured by the standard deviation of NDVI in a 90m x 90m window. C) We detected no selection pressure on windspeed for the first 3 days of the fire. D) We detected no selection pressure on prefire NDVI, which is correlated with overstory canopy density and surface fuel loads.")
+fig_nums(name = "selection-by-suppression-phenotype-distributions", caption = "The selection effect on the vegetation and climate burning conditions of suppressed wildfires. A) Early suppression efforts selected for greater average energy release component (ERC), an estimate of fireline intensity correlated to hot, dry conditions. B) Fires surviving initial suppression efforts burn in more homogenous fuels, as measured by the standard deviation of NDVI in a 90m x 90m window. C) We detected no selection pressure on windspeed for the first 3 days of the fire. D) We detected no selection pressure on prefire NDVI, which is correlated with overstory canopy density and surface fuel loads.")
 ```
 
-![`r fig_nums(name = "selection-by-suppression-phenotype-distributions")`](../../figures/selection-on-burning-conditions.png)
+![`r fig_nums(name = "selection-by-suppression-phenotype-distributions")`](../../figures/selection-on-burning-conditions.png){ width=6in }
 
 ### Implications of selection by suppression for fire effects
 
@@ -224,7 +226,7 @@ Wildfire effects to forest vegetation are outcomes of a complex social-ecologica
 fig_nums(name = "fig-prop-surviving-ia-by-size_short.png", caption = "As the minimum fire event size of a dataset increases, a greater proportion of those fire events survived initial attack suppression efforts and burned on average under more extreme conditions. Thus databases with larger minimum fire sizes exhibit a stronger bias towards fires that burned in extreme conditions as a result of selection by suppression.")
 ```
 
-![`r fig_nums(name = "fig-prop-surviving-ia-by-size_short.png")`](../../figures/prop-surviving-ia-by-size_short.png)
+![`r fig_nums(name = "fig-prop-surviving-ia-by-size_short.png")`](../../figures/prop-surviving-ia-by-size_short.png){ width=6in }
 
 ### Context of suppression management on fire effects
 
