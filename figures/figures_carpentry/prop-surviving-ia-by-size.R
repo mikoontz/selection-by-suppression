@@ -105,4 +105,4 @@ short_prop_suppressed_by_size_gg <-
 
 short_prop_suppressed_by_size_gg
 
-ggsave(plot = short_prop_suppressed_by_size_gg, filename = "figures/prop-surviving-ia-by-size_short.png")
+ggsave(plot = short_prop_suppressed_by_size_gg, filename = "figures/prop-surviving-ia-by-size_short.png", height = 3, width = 6, units = "in")

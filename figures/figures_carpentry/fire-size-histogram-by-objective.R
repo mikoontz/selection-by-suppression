@@ -23,11 +23,13 @@ md %>%
 
 ggplot(md %>% filter(!is.na(objective)), aes(x = area_ha, fill = as.factor(objective))) +
   geom_histogram(bins = 50) +
-  scale_x_log10() +
+  scale_x_log10(label = function(x) ifelse(x < 1, 
+                                           yes = sprintf("%.1f", x), 
+                                           no = sprintf("%.0f", x))) +
   theme_bw() +
-  labs(x = expression(Event ~ size ~ (log[10] ~ hectares)), 
+  labs(x = "Event size (hectares)", 
        y = "Count",
        fill = "Management\nobjective")
 
 
-ggsave("figures/fire-size-histogram-by-management-objective.png")
+ggsave("figures/fire-size-histogram-by-management-objective.png", width = 6, height = 4)

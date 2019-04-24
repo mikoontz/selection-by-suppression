@@ -16,22 +16,28 @@ duration_distribution <-
   geom_density(alpha = 0.5) +
   theme_bw() +
   labs(x = "Burn duration (days)",
-       y = "Density",
+       y = "Pr(X)",
        fill = "Management\nobjective")
+
 
 ggsave(plot = duration_distribution, filename = "figures/burn-duration-density-plot-by-objective.png")
 
 event_size_v_duration <-
-  ggplot(fires, aes(x = burn_duration, y = log(fire_area_m2 / 10000, base = 10), lty = objective, color = objective)) +
+  ggplot(fires, aes(x = burn_duration, y = fire_area_m2 / 10000, lty = objective, color = objective)) +
   geom_point(alpha = 0.1, cex = 0.9) +
   geom_smooth() +
   theme_bw() +
+  scale_y_log10(labels = function(x) sprintf("%.0f", x)) +
   labs(x = "Burn duration (days)",
-       y = expression(Event ~ size ~ (log[10] ~ hectares)),
+       y = "Event size\n(hectares)",
        lty = "Management\nobjective",
        color = "Management\nobjective")
+
 event_size_v_duration
+
 ggsave(plot = event_size_v_duration, filename = "figures/burn-duration-vs-event-size-by-objective.png")
+
+
 
 sdc_v_duration <-
   ggplot(fires, aes(x = burn_duration, y = sdc, lty = objective, color = objective)) +
@@ -53,15 +59,17 @@ prop_high_v_duration <-
   labs(x = "Burn duration (days)",
        y = "Proportion high severity",
        lty = "Management\nobjective",
-       color = "Management\nobjective")
+       color = "Management\nobjective") +
+  theme()
+
 
 ggsave(plot = prop_high_v_duration, filename = "figures/burn-duration-vs-proportion-high-severity-by-objective.png")
 
 
-duration_distribution_no_legend <- duration_distribution + theme(legend.position = "none")
-event_size_v_duration_no_legend <- event_size_v_duration + theme(legend.position = "none")
-sdc_v_duration_no_legend <- sdc_v_duration + theme(legend.position = "none") 
-prop_high_v_duration_no_legend <- prop_high_v_duration + theme(legend.position = "none")
+duration_distribution_no_legend <- duration_distribution + theme(legend.position = "none", axis.text.y = element_text(angle = 90, hjust = 0.5))
+event_size_v_duration_no_legend <- event_size_v_duration + theme(legend.position = "none", axis.text.y = element_text(angle = 90, hjust = 0.5))
+sdc_v_duration_no_legend <- sdc_v_duration + theme(legend.position = "none", axis.text.y = element_text(angle = 90, hjust = 0.5)) 
+prop_high_v_duration_no_legend <- prop_high_v_duration + theme(legend.position = "none", axis.text.y = element_text(angle = 90, hjust = 0.5))
 
 shared_legend <- get_legend(sdc_v_duration)
 
@@ -75,4 +83,4 @@ pgrid <- plot_grid(duration_distribution_no_legend,
 # add legend
 panel_plot <- plot_grid(pgrid, shared_legend, ncol = 2, rel_widths = c(1, 0.2))
 
-ggsave(plot = panel_plot, filename = "figures/burn-duration-4-panel.png")
+ggsave(plot = panel_plot, filename = "figures/burn-duration-4-panel.png", height = 5, width = 6, units = "in")

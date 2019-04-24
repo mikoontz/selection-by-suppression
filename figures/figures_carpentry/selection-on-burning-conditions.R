@@ -42,7 +42,7 @@ selection_on_erc <-
   ggplot(ia %>% dplyr::mutate(survived_ia = ifelse(survived_ia == 1, yes = "yes", no = "no")), aes(x = prefire_erc, fill = survived_ia)) +
   geom_density(alpha = 0.5) +
   # geom_histogram(alpha = 0.5, bins = 100) +
-  labs(x = "Prefire Energy Release Component (ERC)\n(higher is more extreme)",
+  labs(x = "Prefire ERC\n(higher is more extreme)",
        y = "Pr(X)",
        fill = "Survived\ninitial attack") +
   theme_bw()
@@ -94,14 +94,15 @@ selection_on_vs <-
        fill = "Survived\ninitial attack") +
   theme_bw()
 
-panel_grid_color <- plot_grid(selection_on_erc + theme(legend.position = "none"),
-                              selection_on_fuel_heterogeneity + theme(legend.position = "none"),
-                              selection_on_vs + theme(legend.position = "none"),
-                              selection_on_prefire_ndvi + theme(legend.position = "none"),
+panel_grid_color <- plot_grid(selection_on_erc + theme(legend.position = "none", axis.text.y = element_text(angle = 90, hjust = 0.5)),
+                              selection_on_fuel_heterogeneity + theme(legend.position = "none", axis.text.y = element_text(angle = 90, hjust = 0.5)),
+                              selection_on_vs + theme(legend.position = "none", axis.text.y = element_text(angle = 90, hjust = 0.5)),
+                              selection_on_prefire_ndvi + theme(legend.position = "none", axis.text.y = element_text(angle = 90, hjust = 0.5)),
                               nrow = 2, ncol = 2,
                               labels = LETTERS[1:4])
 
 selection_panel_plot_color <- plot_grid(panel_grid_color, shared_legend, rel_widths = c(1, 0.2))
 
-ggsave(plot = selection_panel_plot_color, filename = "figures/selection-on-burning-conditions.png")
+ggsave(plot = selection_panel_plot_color, filename = "figures/selection-on-burning-conditions.png",
+       width = 6, height = 5, units = "in")
 

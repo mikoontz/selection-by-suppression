@@ -2,6 +2,7 @@
 
 library(tidyverse)
 library(tidybayes)
+library(brms)
 
 fm1b_brms <- read_rds("analyses/analyses_output/selection-by-suppression-model-fit.rds")
 
@@ -26,7 +27,7 @@ effect_sizes_halfeye <-
   geom_halfeyeh() +
   theme_bw() +
   geom_vline(xintercept = 0, lty = 2) +
-  labs(x = "Effect size\nLog odds change in Pr(suriving 48-hour initial attack)\nfor a 1 standard deviation increase in covariate", y = "Coefficient")
+  labs(x = "Effect size\nLog odds change in Pr(suriving 48-hour initial attack)\nfor a 1 standard deviation increase in covariate", y = NULL)
 
 effect_sizes_halfeye
 
@@ -58,9 +59,9 @@ effect_sizes_halfeye <-
   geom_halfeyeh() +
   theme_bw() +
   geom_vline(xintercept = 0, lty = 2) +
-  labs(x = "Effect size\nLog odds change in Pr(suriving initial attack)\nfor a 1 standard deviation increase in covariate", y = "Coefficient")
+  labs(x = "Effect size\nLog odds change in Pr(suriving initial attack)\nfor a 1 standard deviation increase in covariate", y = NULL)
 
 effect_sizes_halfeye
 
-ggsave(effect_sizes_halfeye, filename = "figures/selection-by-suppression-halfeye-simple.png")
+ggsave(effect_sizes_halfeye, filename = "figures/selection-by-suppression-halfeye-simple.png", width = 6, height = 5, units = "in")
 
